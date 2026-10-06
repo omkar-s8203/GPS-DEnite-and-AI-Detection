@@ -189,6 +189,8 @@ Known gaps accepted in this baseline:
 
 | 2026-10-06 | DB-3.0 (hardware status) | Correction from the project owner: no hardware is owned; only a development laptop (i5-11300H, 24 GB, RTX 3050, Windows 11 with WSL2). Raspberry Pi 5, stereo camera and MK15 changed from Owned to To buy in the READMEs, hardware overview and BOM; BOM total revised to about ₹132,000–214,000; OD-22 and HP-0 added. Passages elsewhere that justify a choice by "already owned" (raspberry-pi-5.md, gps-denied-navigation.md, ADR-011, ADR-017, siyi-mk15.md, system-requirements NFR-060) are superseded on that point; the technical content is unchanged |
 
+| 2026-10-06 | DB-3.0 (deadline) | Set by the project owner: completion by **15 January 2027**, with simulation over all terrain types. Deliverable for that date is Part 1 (complete system in simulation, gate G3) plus a terrain campaign and results on public datasets; hardware and flight (Part 2) follow afterwards. Stereo VIO with OpenVINS cut; follow, XFeat comparison and snow terrain are stretch items. Added: [datasets-and-terrains.md](11-simulation/datasets-and-terrains.md), checklist v3.0 with a 14-week calendar and checkpoints, roadmap §1d. Dataset downloads started (VisDrone, UAV-VisLoc) into a data folder outside the repository |
+
 ## DB-3.0 consistency notes
 
 - Diagrams: every Mermaid block now renders. Earlier notes in this file saying the diagrams were "checked by inspection, not rendered" are superseded.

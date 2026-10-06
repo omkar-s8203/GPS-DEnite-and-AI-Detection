@@ -36,7 +36,8 @@ It is a low-cost, open, ROS 2-based reference design with a measured account of 
 | 7 | [Node reference](05-ros2/node-reference.md) and [interfaces](05-ros2/interfaces.md) | The implementation specification |
 | 8 | [Safety architecture](12-safety/safety-architecture.md) | Rules that are not negotiable |
 | 9 | [Roadmap](16-development-roadmap/roadmap.md) | What to do next |
-| 9a | [Development checklist](16-development-roadmap/development-checklist.md) | Step-by-step build order with tick boxes |
+| 9a | [Development checklist](16-development-roadmap/development-checklist.md) | Step-by-step build order with tick boxes; 14-week calendar to 15 January 2027 |
+| 9b | [Datasets and terrains](11-simulation/datasets-and-terrains.md) | Data to download, licences, terrain types and the test matrix |
 
 ## 3. Architecture overview
 

@@ -9,7 +9,7 @@ A quadcopter that keeps flying its mission when GPS is lost. It finds its own po
 | Type | College engineering project |
 | Design baseline | DB-3.0 |
 | Current stage | Step 1 of the [development checklist](documentation/16-development-roadmap/development-checklist.md) |
-| Planned duration | About 42 weeks |
+| Deadline | 15 January 2027: complete system working in simulation over all terrain types. Hardware and flight follow after that date |
 
 ## Contents
 
@@ -171,6 +171,7 @@ Folders marked *planned* do not exist yet. They are created as the checklist rea
 |---|---|
 | Understand the project in ten minutes | [project-overview.md](documentation/00-project-overview/project-overview.md) |
 | See the whole system in pictures | [system architecture diagrams](documentation/19-system-architecture-diagrams/README.md) |
+| See the datasets and terrain types used | [datasets-and-terrains.md](documentation/11-simulation/datasets-and-terrains.md) |
 | Know what to build next | [development-checklist.md](documentation/16-development-roadmap/development-checklist.md) |
 | Know what the system must do | [system-requirements.md](documentation/01-requirements/system-requirements.md) |
 | Understand position without GPS | [visual-geolocalization.md](documentation/09-navigation/visual-geolocalization.md) |

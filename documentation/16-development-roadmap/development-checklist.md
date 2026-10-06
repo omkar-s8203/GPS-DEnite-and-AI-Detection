@@ -3,16 +3,69 @@
 | Field | Value |
 |---|---|
 | Document ID | GDN-RDM-002 |
-| Version | 2.0 (software-first plan) |
+| Version | 3.0 (software-first plan, deadline 15 January 2027) |
 | Baseline | DB-3.0 |
 | Date | 2026-10-06 |
 | Status | Step 0 complete. Steps 1 to 19 not started. |
 
 The build order for the whole project, one step at a time.
 
-**The plan in one line:** build and prove all the software in simulation on a PC first (Part 1), then bring in the hardware and move the working software onto it (Part 2).
+**The plan in one line:** by 15 January 2027, build and prove all the software in simulation on a laptop, over every terrain type (Part 1). Hardware (Part 2) follows after that date if the project continues.
 
-Tick a box when the work is merged and its "done when" condition is met. Phase codes (P02, P06G, …) and gate codes (G0, G2, …) refer to the [roadmap](roadmap.md); test codes refer to the [testing strategy](../13-testing/testing-strategy.md). Where this checklist orders work differently from the roadmap, this checklist is the current plan (see roadmap §1c).
+Tick a box when the work is merged and its "done when" condition is met. Phase codes (P02, P06G, …) and gate codes (G0, G2, …) refer to the [roadmap](roadmap.md); test codes refer to the [testing strategy](../13-testing/testing-strategy.md). Where this checklist orders work differently from the roadmap, this checklist is the current plan (see roadmap §1c and §1d). Datasets and terrain types are defined in [datasets-and-terrains](../11-simulation/datasets-and-terrains.md).
+
+## Deadline: 15 January 2027
+
+Set by the project owner on 2026-10-06. That leaves about 14 weeks, against a full plan of about 42.
+
+| | |
+|---|---|
+| **Delivered by 15 January** | Part 1: the complete system working in simulation, driven from the Android app, tested over every terrain type, with map matching and detection also measured on real public datasets. Report, video and slides |
+| **Not delivered by 15 January** | Part 2: a flying drone. No hardware is owned, nothing is ordered, and building, tuning and flight-testing a GPS-denied aircraft does not fit in 14 weeks alongside the software |
+| **Optional, if parts are bought by mid-November** | A table-top demonstration: Raspberry Pi and camera running the map matcher on printed or recorded images. No flight |
+
+If the college requires a flying drone by 15 January, say so now: the plan would have to change to a much smaller system, and GPS-denied flight would not be a safe promise.
+
+### What is cut to fit
+
+| Item | Decision |
+|---|---|
+| Stereo odometry with OpenVINS and its comparison | Cut. Stereo is kept only for depth and the obstacle stop |
+| XFeat and correlation comparison | Stretch. SIFT first; compare only if week 7 ends on time |
+| Follow from above | Stretch. Dropped first if the plan slips |
+| Tracking | Dropped second |
+| Snow terrain | Optional |
+| Everything else in Part 1 | Kept |
+
+### Calendar
+
+| Week | Dates | Work | Steps |
+|---|---|---|---|
+| 1 | 6 to 11 Oct | Environment, repository, datasets downloaded, app project created | 1 |
+| 2 | 12 to 18 Oct | Simulated flight controller linked to ROS 2; stand-in position source | 2 |
+| 3 | 19 to 25 Oct | GPS-loss logic and failsafes; Gazebo drone and cameras | 3, 4 |
+| 4 | 26 Oct to 1 Nov | Logic scenarios passing; first two terrains in Gazebo; app screens against the mock | 3, 4, 11 |
+| 5 | 2 to 8 Nov | Map matcher on UAV-VisLoc; detector training started | 5, 8 |
+| 6 | 9 to 15 Nov | Map matcher in simulation; **gate G2-sim**; aerial detector figures | 5, 8 |
+| 7 | 16 to 22 Nov | Ground odometry and fusion; stereo depth and obstacles | 6, 7 |
+| 8 | 23 to 29 Nov | Navigation and the full mission without GPS | 9 |
+| 9 | 30 Nov to 6 Dec | Grid search and findings; app connected to the simulation | 10, 11 |
+| 10 | 7 to 13 Dec | Tracking; app complete; remaining terrains built | 10, 11, 4 |
+| 11 | 14 to 20 Dec | Terrain campaign over all terrain types; follow if on time | 12 |
+| 12 | 21 to 27 Dec | Full demonstration three times; **gate G3**; video | 12 |
+| 13 | 28 Dec to 3 Jan | Results tables, report, slides updated | 12 |
+| 14 | 4 to 10 Jan | Buffer for slips; rehearsal | — |
+| — | 11 to 15 Jan | Final checks and submission | — |
+
+Checkpoints. If one is missed, apply the cut beside it at once; do not carry the delay forward.
+
+| Date | Must be true | If not |
+|---|---|---|
+| 1 Nov | Mode switching passes in simulation | Drop the optional terrain and the method comparison |
+| 15 Nov | Gate G2-sim passed on UAV-VisLoc | Use the sample subset and the best-performing terrains; report the limits |
+| 6 Dec | A mission flies without GPS and a search runs | Drop follow |
+| 20 Dec | Terrain campaign finished | Drop tracking; report the terrains completed |
+| 27 Dec | Gate G3 passed | Freeze; spend the rest on the report only |
 
 ## How to use this checklist
 
@@ -117,6 +170,7 @@ Needs a laptop only. The team owns no drone hardware at the start, and none is u
 - [ ] Third-party sources pinned in `deps.repos`
 - [ ] Automated checks on every pull request: build, lint, tests
 - [ ] Set-up instructions added to the root README
+- [ ] Datasets downloaded to the data folder: VisDrone, UAV-VisLoc; accounts created for SARD
 
 **Done when:** the empty workspace builds and tests pass on a clean PC, and a new person can set up from the README in under half a day.
 
@@ -149,7 +203,9 @@ Needs a laptop only. The team owns no drone hardware at the start, and none is u
 
 - [ ] Gazebo connected to SITL with a quadcopter model
 - [ ] Simulated downward camera, stereo camera, IMU and range sensor publishing on the real topic names
-- [ ] World with a satellite image as the ground texture
+- [ ] Sites chosen for terrain types T1 to T7 and two image years fetched for each from NAIP
+- [ ] One world per terrain, with the first image as the ground texture; urban and suburb first, the rest by week 10
+- [ ] A hilly world with real ground height for T7
 - [ ] A **second, different** image of the same area kept as the on-board reference (other date, season or source), so that matching is not trivially easy
 - [ ] Objects in the world: buildings, obstacles, people and vehicles, some of them moving
 - [ ] Switches for camera noise, blur, delay and dropped frames
@@ -161,7 +217,7 @@ Needs a laptop only. The team owns no drone hardware at the start, and none is u
 
 - [ ] `map_prepare` tool: turns a reference image into a map pack with tiles and features
 - [ ] `map_matcher`: level and rotate the photo, extract features, match, verify, apply gates
-- [ ] Matching run on a public drone-to-satellite dataset with known positions (for example UAV-VisLoc)
+- [ ] Matching run on UAV-VisLoc (real drone photos with known positions), with results split by terrain
 - [ ] Matching run inside the simulation against the second reference image
 - [ ] SIFT compared with XFeat and with simple correlation on the same data
 - [ ] Behaviour checked at 25, 40 and 60 m, and over ground with few features
@@ -194,7 +250,8 @@ Needs a laptop only. The team owns no drone hardware at the start, and none is u
 
 - [ ] Pretrained YOLO26n running on forward images through NCNN on the PC
 - [ ] `object_localizer`: distance to a detected object from stereo depth
-- [ ] Aerial-view model trained on a public aerial dataset (for example VisDrone); model card written
+- [ ] Aerial-view model trained on VisDrone on the laptop GPU; model card written, including the non-commercial licence
+- [ ] Recall on HERIDAL and SARD measured, as the search-and-rescue figure
 - [ ] Tiled detection on 1080p downward images
 - [ ] Recall and false-alarm figures measured on held-out aerial images
 - [ ] Ground projection: pixel to coordinates, checked against simulation truth
@@ -247,18 +304,21 @@ Build in this order. If time runs short, drop follow first, then tracking.
 - [ ] One command starts the whole system in simulation
 - [ ] Demonstration run from the app: take off, GPS denied, grid search, findings pinned, follow a moving target, GPS returns, land
 - [ ] The run repeated three times without manual fixes
+- [ ] **Terrain campaign:** the test matrix in [datasets-and-terrains](../11-simulation/datasets-and-terrains.md) §5 run on every terrain type at 25, 40 and 60 m with GPS off
+- [ ] Terrain results table written: where the system works, where it degrades, where it correctly holds and hands over
+- [ ] Simulation results set beside the UAV-VisLoc real-data results
 - [ ] Every simulation scenario (S-01 to S-29) passing in the automated checks
 - [ ] Demonstration video recorded
 - [ ] List written of everything that still has to be confirmed on hardware
 - [ ] Documentation updated to match what was built
 
-**Gate G3 passes when:** the demonstration runs three times in a row and all scenarios pass. This is the **Bronze** result, and the project is presentable from this point even if hardware is delayed.
+**Gate G3 passes when:** the demonstration runs three times in a row, all scenarios pass and the terrain table is complete. This is the **Bronze** result and the deliverable for 15 January 2027.
 
 ---
 
 # Part 2: Hardware
 
-Starts when gate G3 is passed and the parts have arrived.
+**After 15 January 2027.** Part 2 is outside the deadline and is kept as the plan for continuing the project. It starts when gate G3 is passed and the parts have arrived.
 
 ## Step 13: MK15 network check (gate G0)
 
@@ -387,18 +447,8 @@ Each stage is flown only after the one before it is passed.
 | Silver | Step 19, through "grid search on GPS" | Plus hold without GPS in flight and the app used in flight |
 | Gold | Step 19, complete | Plus grid search with GPS disabled and follow from above |
 
-## Rough timing
+## Timing
 
-| Weeks | Work |
-|---|---|
-| 1 to 2 | Step 1 |
-| 3 to 8 | Steps 2, 3, 4; app started |
-| 7 to 14 | Steps 5, 6, 7, 8 |
-| 13 to 20 | Steps 9, 10; app completed |
-| 21 to 22 | Step 12, gate G3. **End of Part 1** |
-| 16 | Latest date to order parts |
-| 22 to 30 | Steps 13 to 18 |
-| 30 to 40 | Flight tests |
-| 41 to 42 | Evaluation and report |
+Part 1: weeks 1 to 14, from 6 October 2026 to 15 January 2027; see the calendar at the top.
 
-Planning estimates for a team of four working part-time. Part 1 depends only on the team's own time; Part 2 also depends on deliveries, weather and site access.
+Part 2: about 20 further weeks after hardware arrives (bring-up 8 weeks, flight testing 10, evaluation 2). Planning estimate only; it depends on deliveries, weather and site access.

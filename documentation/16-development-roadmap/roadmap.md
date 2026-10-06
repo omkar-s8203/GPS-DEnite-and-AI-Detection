@@ -145,6 +145,21 @@ Consequences:
 | Pi performance is unknown until Part 2 | Node rates and resolutions stay configurable; load shedding is built in Part 1 |
 | Overall length | Unchanged at about 42 weeks: Part 1 about weeks 1 to 22, Part 2 about weeks 22 to 42 |
 
+## 1d. Deadline of 15 January 2027 (2026-10-06)
+
+Set by the project owner. About 14 weeks are available. The deliverable for that date is **Part 1 of the software-first plan: the complete system in simulation (gate G3, the Bronze level)**, extended with a terrain campaign over every terrain type and with results on real public datasets. Part 2 (hardware and flight) lies outside the deadline.
+
+| Topic | Decision |
+|---|---|
+| Deliverable | Gate G3 by 27 December 2026; report and slides by 15 January 2027 |
+| Added | Terrain campaign T1 to T7 at 25, 40 and 60 m ([datasets-and-terrains](../11-simulation/datasets-and-terrains.md)) |
+| Cut | P07 stereo VIO with OpenVINS and the three-estimator comparison |
+| Stretch | Follow from above; XFeat comparison; snow terrain |
+| Phases P04, P08, P11 to P17 | After the deadline |
+| Calendar and checkpoints | [development-checklist.md](development-checklist.md) |
+
+Fourteen weeks for work earlier estimated at about 22 is tight. The checkpoints in the checklist name what is dropped at each date if the plan slips.
+
 ## 2. Overview
 
 ```mermaid
