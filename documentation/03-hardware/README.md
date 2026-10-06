@@ -26,11 +26,11 @@
 
 | Role | Component | Status |
 |---|---|---|
-| Companion computer | Raspberry Pi 5, 8 GB, with active cooler | Owned (cooler to buy) |
-| Stereo camera + VIO IMU | Waveshare IMX219-83 (dual IMX219, ICM-20948) | Owned — **conditional**, see gate G2 |
+| Companion computer | Raspberry Pi 5, 8 GB, with active cooler | To buy |
+| Stereo camera + VIO IMU | Waveshare IMX219-83 (dual IMX219, ICM-20948) | To buy; model to be confirmed (OD-22) — **conditional**, see gate G2b |
 | Downward camera (DB-2.0) | USB 2.0 UVC, ≈ 1 MP, 90–120° lens, global shutter preferred | **To procure** — model open (OD-12) |
 | Reference imagery (DB-2.0) | Georeferenced image of the test site, ≤ 0.5 m/px, licence permitting offline use | **To obtain** (OD-11) |
-| RC / telemetry / video | SIYI MK15 HDMI combo | Owned |
+| RC / telemetry / video | SIYI MK15 HDMI combo | To buy; to be confirmed (OD-22) |
 | Flight controller | Holybro Pixhawk 6C | **To procure** |
 | Power module | Holybro PM02 (analog, 5.2 V 3 A) | To procure (combo) |
 | GNSS + compass | Holybro M10 | To procure (combo) |

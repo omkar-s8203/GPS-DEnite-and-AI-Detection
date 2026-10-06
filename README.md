@@ -93,16 +93,18 @@ For a click-through version of the architecture, see the [interactive system dia
 
 ## How we are building it
 
-The approach is **simulation first, recordings second, flight last**. Each claim is proven at the cheapest level possible before the drone leaves the ground.
+The approach is **software first, hardware second**. The complete software, including the Android app, is built and proven in simulation on a PC. Only then is it moved onto the real drone.
 
 | Order | Stage | What is proven |
 |---|---|---|
 | 1 | Design | Requirements, architecture and decisions (done) |
-| 2 | Simulation | Switching logic, failsafes and missions, with no hardware |
-| 3 | Recorded data | Map matching accuracy on real aerial photos of the test site |
-| 4 | Bench | Real hardware on a table, propellers off |
+| 2 | Simulation (Part 1) | The whole system on a PC: map matching, GPS-loss switching, failsafes, missions, search, follow, and the app on an emulator |
+| 3 | Real cameras and recordings (Part 2) | The same software on the Raspberry Pi; map matching accuracy on real aerial photos of the test site |
+| 4 | Bench | Complete hardware on a table, propellers off |
 | 5 | Flight, observing only | The software watches while the pilot flies on GPS |
 | 6 | Flight without GPS | Hover first, then a route, then search and follow |
+
+Simulation cannot prove everything. Real camera quality, speed on the Raspberry Pi, the radio link and map matching on real ground are confirmed only in Part 2, and some tuning is expected there.
 
 Work stops at numbered **gates** until a measured result says it is safe or sensible to continue. The full list is in the [development checklist](documentation/16-development-roadmap/development-checklist.md).
 
@@ -110,18 +112,20 @@ Three delivery levels protect the project against delays:
 
 | Level | Delivered |
 |---|---|
-| Bronze | Map matching proven on recordings; complete system, including search and follow, in simulation; app running against simulation |
+| Bronze | Complete system, including search and follow, working in simulation and driven from the app; map matching shown on recorded data |
 | Silver | Bronze, plus holding position without GPS in flight, the app used in flight, and a grid search flown on GPS |
 | Gold | Silver, plus grid search with GPS disabled and follow from above |
 
 ## Hardware
 
+No hardware has been bought yet. Development starts on a laptop, in simulation.
+
 | Item | Selection | State |
 |---|---|---|
-| Companion computer | Raspberry Pi 5, 8 GB, with active cooler | Owned |
+| Companion computer | Raspberry Pi 5, 8 GB, with active cooler | To buy |
 | Flight controller | Holybro Pixhawk 6C with PM02 power module and M10 GPS | To buy |
-| Radio and ground station | SIYI MK15 (Android remote and air unit) | Owned |
-| Stereo camera | Waveshare IMX219-83 with ICM-20948 IMU | Owned |
+| Radio and ground station | SIYI MK15 (Android remote and air unit) | To buy; choice to be confirmed before purchase |
+| Stereo camera | Waveshare IMX219-83 with ICM-20948 IMU | To buy; choice to be confirmed before purchase |
 | Downward camera | USB 2.0, 1080p, wide lens | To buy, model open |
 | Optical flow and range | MicoAir MTF-01 | To buy |
 | Airframe, motors, ESCs, battery | 4S quadcopter, about 450 mm class | To decide |

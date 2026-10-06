@@ -8,19 +8,19 @@ Thank you for helping with the GPS-denied drone project. This guide applies to t
 2. Skim the [system architecture diagrams](documentation/19-system-architecture-diagrams/README.md).
 3. Open the [development checklist](documentation/16-development-roadmap/development-checklist.md) to see what is being built now.
 
-The project is at the start of the build. Most checklist items are open.
+The project is at the start of the build. All software is built and proven in simulation first (Part 1 of the checklist); hardware comes afterwards (Part 2). Most checklist items are open.
 
 ## Ways to contribute
 
 | Contribution | Needs hardware? | Where to look |
 |---|---|---|
 | Fix or clarify documentation | No | `documentation/` |
-| Simulation scenarios and tests | No | Checklist steps 3 and 4 |
-| Logic with unit tests (mode switching, planners, filters) | No | Checklist steps 4, 6, 11, 12 |
-| Android app against the mock gateway | No, an emulator is enough | Checklist step 9 |
-| Map matching on recorded images | No, recordings are enough | Checklist step 5 |
-| Camera drivers, bench tests | Yes | Checklist steps 7, 8, 13 |
-| Aerial images for training and testing | A camera drone | Checklist steps 5 and 10 |
+| Simulation scenarios and tests | No | Checklist steps 2, 3 and 4 |
+| Logic with unit tests (mode switching, planners, filters) | No | Checklist steps 3, 6, 9, 10 |
+| Android app against the mock gateway | No, an emulator is enough | Checklist step 11 |
+| Map matching on public datasets | No | Checklist step 5 |
+| Camera drivers, bench tests | Yes | Checklist steps 14 and 16 |
+| Aerial images for training and testing | A camera drone | Checklist step 15 |
 | Review a pull request | No | Open pull requests |
 
 ## How to contribute
@@ -80,7 +80,7 @@ Style: C++ follows the ROS 2 style checked by `ament_lint`; Python follows PEP 8
 
 ## Checks before a pull request
 
-The automated checks are set up in checklist step 2. Until then, check by hand:
+The automated checks are set up in checklist step 1. Until then, check by hand:
 
 - [ ] The change builds.
 - [ ] Existing tests still pass and new logic has a test.

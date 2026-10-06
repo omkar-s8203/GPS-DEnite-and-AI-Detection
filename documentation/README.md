@@ -87,11 +87,11 @@ flowchart LR
 
 | Role | Component | Status | Detail |
 |---|---|---|---|
-| Companion computer | Raspberry Pi 5, 8 GB, active cooler | Owned | [raspberry-pi-5.md](03-hardware/raspberry-pi-5.md) |
+| Companion computer | Raspberry Pi 5, 8 GB, active cooler | To buy | [raspberry-pi-5.md](03-hardware/raspberry-pi-5.md) |
 | **Downward camera** (DB-2.0) | USB 2.0, ≈ 1 MP, 90–120° lens | **To buy; model open** | [downward-camera.md](03-hardware/downward-camera.md) |
 | **Reference imagery** (DB-2.0) | Georeferenced image of the test site, ≤ 0.5 m/px, licensed for offline use | **To obtain** | [ADR-016](17-decisions/ADR-016-reference-imagery-and-downward-camera.md) |
-| Stereo camera + VIO IMU | Waveshare IMX219-83 (2 × IMX219, 60 mm baseline, ICM-20948) | Owned; low-regime odometry conditional on gate G2b | [stereo-camera.md](03-hardware/stereo-camera.md) |
-| RC, telemetry, video | SIYI MK15 HDMI combo | Owned | [siyi-mk15.md](03-hardware/siyi-mk15.md) |
+| Stereo camera + VIO IMU | Waveshare IMX219-83 (2 × IMX219, 60 mm baseline, ICM-20948) | To buy; model to be confirmed (OD-22); low-regime odometry conditional on gate G2b | [stereo-camera.md](03-hardware/stereo-camera.md) |
+| RC, telemetry, video | SIYI MK15 HDMI combo | To buy; to be confirmed (OD-22) | [siyi-mk15.md](03-hardware/siyi-mk15.md) |
 | Flight controller | **Holybro Pixhawk 6C** + PM02 + M10 GPS | To buy | [flight-controller.md](03-hardware/flight-controller.md) |
 | Optical flow + range | MicoAir MTF-01 | To buy | [sensors.md](03-hardware/sensors.md) |
 | Airframe | 450–500 mm quad, 4S, < 2 kg all-up | **Not yet selected** | [weight-budget.md](03-hardware/weight-budget.md) |
@@ -242,8 +242,8 @@ Simulation comes early by design; no autonomous flight happens before simulation
 |---|---|
 | Design documentation | Complete (DB-1.0) |
 | Code | None — by instruction |
-| Hardware owned | Raspberry Pi 5, stereo camera, MK15 |
-| Hardware to procure | Flight-controller set, flow sensor, cooler, BEC, airframe and propulsion |
+| Hardware owned | None. A development laptop only (corrected 2026-10-06) |
+| Hardware to procure | Raspberry Pi 5, stereo camera, MK15, flight-controller set, flow sensor, cooler, BEC, airframe and propulsion |
 | Measurements | None; every performance figure is a TARGET or an ESTIMATE |
 
 Live tracking: [project-status.md](project-status.md).

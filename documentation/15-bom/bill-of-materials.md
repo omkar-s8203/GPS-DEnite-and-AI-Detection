@@ -25,12 +25,12 @@ Required for the baseline design.
 
 | # | Component | Qty | Purpose | Key specification | Approx. price (₹) | Source / basis | Status |
 |---|---|---|---|---|---|---|---|
-| C1 | Raspberry Pi 5, 8 GB | 1 | Companion computer | BCM2712, 8 GB | 7,000–23,000 | Seen: listings from ≈ ₹7,000 to ≈ ₹22,800 across Indian sellers (wide spread; verify) | Owned |
+| C1 | Raspberry Pi 5, 8 GB | 1 | Companion computer | BCM2712, 8 GB | 7,000–23,000 | Seen: listings from ≈ ₹7,000 to ≈ ₹22,800 across Indian sellers (wide spread; verify) | To buy |
 | C2 | Raspberry Pi Active Cooler | 1 | Mandatory cooling | Official heatsink + PWM fan | 450–800 | Seen: ≈ ₹450–670 | To buy |
 | C3 | microSD card, 64–128 GB, A2/U3 | 1 | OS and logs | High-endurance preferred | 800–1,800 | Est. | To buy |
-| C4 | Waveshare IMX219-83 stereo camera | 1 | Stereo vision + VIO IMU | 2 × IMX219, 60 mm baseline, ICM-20948 | 4,800–6,600 | Seen: ≈ ₹4,799 (Robu, incl. GST) to ≈ ₹6,600 | Owned |
+| C4 | Waveshare IMX219-83 stereo camera | 1 | Stereo vision + VIO IMU | 2 × IMX219, 60 mm baseline, ICM-20948 | 4,800–6,600 | Seen: ≈ ₹4,799 (Robu, incl. GST) to ≈ ₹6,600 | To buy |
 | C5 | CSI cables, 15-pin to 22-pin (Pi 5), ≤ 200 mm | 2 | Camera connection | Check what is supplied with C4 | 150–400 each | Est. | To buy if not supplied |
-| C6 | SIYI MK15 HDMI combo | 1 | RC, telemetry, video | Ground unit, air unit, HDMI converter | ≈ 53,400 + 18 % GST (≈ 63,000) | Seen: ElectroPi listing ₹53,430 excl. GST | Owned |
+| C6 | SIYI MK15 HDMI combo | 1 | RC, telemetry, video | Ground unit, air unit, HDMI converter | ≈ 53,400 + 18 % GST (≈ 63,000) | Seen: ElectroPi listing ₹53,430 excl. GST | To buy |
 | C7 | Holybro Pixhawk 6C + PM02 + M10 GPS (combo) | 1 | Flight controller, power module, GNSS/compass | STM32H743; ICM-42688-P + BMI088 | 24,500–37,000 | Seen: 6C Mini combos ≈ ₹24,500–37,000; standard 6C combo price to be confirmed | **To buy** |
 | C8 | MicoAir MTF-01 | 1 | Optical flow + ToF range | 8 m range, 100 Hz, MAVLink serial | 2,500–5,000 | Est. | To buy |
 | C9 | BEC 5.1–5.25 V, ≥ 5 A continuous, 3S–6S input | 1 | Pi supply | Low ripple; adjustable or fixed 5.2 V | 500–1,500 | Est. | To buy |
@@ -68,7 +68,7 @@ These add roughly ₹2,700–8,600 to the core spend, excluding any paid imagery
 | C24 | Reference imagery | Resolution requirement tightened to ≈ 0.25 m/px or better for the search profile, or use the own orthomosaic (C25) | — | To obtain (OD-11) |
 | C27 | Search targets: person-sized dummies, bright markers, cones for the test area | New | 500–3,000 (Est.) | To make / buy |
 | C28 | Head protection and high-visibility vest for the team member taking part in follow tests | New | 500–1,500 (Est.) | To buy / borrow |
-| — | Android development | Android Studio on the development laptop; the MK15 itself is the test device; no purchase | 0 | — |
+| — | Android development | Android Studio on the development laptop; an emulator in Part 1; the MK15 is the test device in Part 2 | 0 | — |
 
 Net effect on cost is small (roughly ₹0–5,000 more). The main new cost is time.
 
@@ -76,7 +76,7 @@ Net effect on cost is small (roughly ₹0–5,000 more). The main new cost is ti
 
 | Group | Approx. range (₹) |
 |---|---|
-| Already owned (C1, C4, C6) | — |
+| Companion, stereo camera and radio (C1, C4, C6). Earlier recorded as owned; corrected 2026-10-06: nothing is owned | 74,800–92,600 |
 | Flight controller set (C7) | 24,500–37,000 |
 | Sensing and compute accessories (C2, C3, C5, C8) | 4,000–8,400 |
 | Power and wiring (C9, C10, C11, C16, C17, C20) | 2,100–6,300 |
@@ -84,7 +84,7 @@ Net effect on cost is small (roughly ₹0–5,000 more). The main new cost is ti
 | Batteries and charging (C14 ×2, C15) | 11,000–21,000 |
 | Mechanical and calibration (C18, C19) | 800–3,000 |
 | DB-2.0 additions (C22, C23; imagery not counted) | 2,700–8,600 |
-| **Additional spend for the core build** | **≈ 57,000–121,000** |
+| **Total spend for the core build** | **≈ 132,000–214,000** |
 
 The spread is dominated by the airframe/propulsion choice and by where the Pixhawk is bought. If the institute already has a suitable 450–500 mm quad, batteries and a charger, the additional spend falls to roughly ₹31,000–55,000.
 
@@ -135,11 +135,13 @@ Beyond this project's scope; listed to show the growth path.
 | Laptop with Ubuntu 24.04 | Development, simulation, GCS |
 | Fire-safe charging area, sand bucket | LiPo safety |
 
+> **Correction, 2026-10-06.** The team owns no project hardware; only a development laptop. The SIYI MK15 (≈ ₹63,000) is now the largest single item, about a third to a half of the total. It and the stereo camera were selected partly because they were believed to be owned. Both selections are to be confirmed before purchase (open decision OD-22 in [project-status](../project-status.md)). Cheaper radio arrangements exist, but they would change the app architecture in [ADR-017](../17-decisions/ADR-017-ground-app.md), so the decision needs its own record.
+
 ## 6. Procurement order
 
 | Order | Items | Reason |
 |---|---|---|
-| 1 (now) | C2, C3, C5, C19, O5, **C22, C23, C24** | Enables camera and calibration work, and the offline map-matching feasibility test (gate G2), with owned hardware |
+| 1 (now) | C2, C3, C5, C19, O5, **C22, C23, C24** | Enables camera and calibration work, and the offline map-matching feasibility test (gate G2), once the Raspberry Pi and cameras are bought. Under the software-first plan (roadmap §1c) nothing is ordered until about six weeks before Part 1 ends |
 | 2 | C7, C8, C9, C17 | Enables FC bring-up, HIL and link testing |
 | 3 (after airframe decision) | C12, C13, C14, C15, C16, C18, C20, C21 | Vehicle build |
 | 4 (after verifying the MK15 units) | C10, C11 | Depends on converter connector and supply |

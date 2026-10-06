@@ -93,6 +93,7 @@
 | **OD-18** | **Is follow in scope for the final demonstration?** | Build order puts it last; decide at week ≈ 28 from progress | Week 28 | Team + guide |
 | OD-19 | Search targets and classes for the demonstration | Person-sized dummies and vehicles by default (extends OD-2) | P19 | Team + guide |
 | OD-20 | Participant rules for follow tests | A consenting, briefed team member only; institute approval | Before stage N | Team + guide + institute |
+| **OD-22** | **Confirm the radio and the stereo camera before purchase.** The team owns no hardware (corrected 2026-10-06). The MK15 (≈ ₹63,000) and the Waveshare stereo camera were chosen partly because they were believed to be owned | Keep the MK15 if the budget allows, since the app design is built on it; otherwise a cheaper RC link plus a separate IP link and an ordinary Android phone or tablet, recorded in a new ADR. For the stereo camera, weigh a hardware-synchronised unit against the Waveshare board (ADR-011) | Before parts are ordered | Team + guide |
 | OD-21 | Reference imagery at ≈ 0.25 m/px or own orthomosaic for the search profile (tightens OD-11) | Own orthomosaic recommended | Before P19 | Team |
 
 ## Hardware Pending
@@ -103,10 +104,11 @@
 | HP-2 | MicoAir MTF-01 | To buy | Order with HP-1 |
 | HP-3 | Raspberry Pi Active Cooler, A2 microSD, 15→22-pin CSI cables | To buy | Order now: unblocks P04 |
 | HP-4 | 5 V ≥ 5 A BEC, wiring, connectors, fuses | To buy | Order with HP-1 |
-| HP-5 | MK15 checks: air-unit voltage label (4S support), converter connector and supply, operating band | To inspect | Inspect owned unit; record in [siyi-mk15.md](03-hardware/siyi-mk15.md) §7 |
+| HP-0 | Raspberry Pi 5, stereo camera, SIYI MK15 | **To buy** (earlier recorded as owned; corrected 2026-10-06) | Confirm choices first (OD-22) |
+| HP-5 | MK15 checks: air-unit voltage label (4S support), converter connector and supply, operating band | To inspect | Inspect the unit on arrival; record in [siyi-mk15.md](03-hardware/siyi-mk15.md) §7 |
 | HP-6 | Airframe, motors, ESCs, props, batteries, charger | Decision pending (OD-1) | — |
 | HP-7 | Calibration target | To make | Print and mount |
-| HP-8 | Weigh all owned components | To do | Update [weight-budget.md](03-hardware/weight-budget.md) |
+| HP-8 | Weigh all components as they arrive | To do | Update [weight-budget.md](03-hardware/weight-budget.md) |
 | HP-9 | Camera upgrade (OAK-D Lite or equivalent) | Conditional | Only after gate G2; hold budget |
 | HP-10 | Waveshare board checks: IMU address, INT pin, supplied cables | To inspect | Record in [low-level-design.md](03-hardware/low-level-design.md) §13 |
 | **HP-11** | **Downward USB camera** | To buy (OD-12) | Order now: needed for the gate G2 data collection |
@@ -182,6 +184,10 @@ Known gaps accepted in this baseline:
 | 2026-10-06 | DB-3.0 | Added by the project owner: a native Android app on the MK15 (web app declined), grid search, track and follow. Added: ground-app.md, search-track-follow.md, ADR-017, ADR-018. Amended: requirements (FR-110–131, NFR-080–092, search profile), ROS 2 packages/nodes/interfaces, MK15 topology (B is now baseline; HDMI converter removed; `hud_node` retired), downward camera (1080p), visual geo-localisation (matching height from reference resolution), AI architecture (aerial model), safety (§8b), FMEA (F58–F69), testing (§9b), performance (§4b), roadmap (§1b, ≈ 42 weeks), BOM, budgets (back inside limits), technology selection, README |
 
 | 2026-10-06 | DB-3.0 (diagram set) | Added [19-system-architecture-diagrams](19-system-architecture-diagrams/README.md): 94 diagrams in eight files covering the full system, hardware (whole, wiring, each part), software (whole, each part), Android app, radio and telemetry, the seven-phase software development life cycle, and all 14 UML diagram types; exported as 93 PNG and 93 SVG images in `rendered/`. **All Mermaid diagrams in the documentation were render-tested** with the Mermaid command-line tool: the 94 new ones and the 40 older ones. One older file, `03-hardware/high-level-architecture.md`, failed to render (unquoted "2.4 GHz" link labels) and was fixed. No design content changed |
+
+| 2026-10-06 | DB-3.0 (build order) | Decided by the project owner: software first, hardware second. All software, including the Android app, is developed and proven in simulation (Part 1, ending at gate G3) before hardware work starts (Part 2). Added: root `README.md`, root `CONTRIBUTING.md`, [development-checklist.md](16-development-roadmap/development-checklist.md) (19 steps), roadmap §1c, interactive diagram `19-system-architecture-diagrams/interactive/system-explorer.html`. New gate G2-sim (map matching on public data and in simulation); gate G2 (own site) and gate G0 (MK15 IP path) move to Part 2. No design content changed |
+
+| 2026-10-06 | DB-3.0 (hardware status) | Correction from the project owner: no hardware is owned; only a development laptop (i5-11300H, 24 GB, RTX 3050, Windows 11 with WSL2). Raspberry Pi 5, stereo camera and MK15 changed from Owned to To buy in the READMEs, hardware overview and BOM; BOM total revised to about ₹132,000–214,000; OD-22 and HP-0 added. Passages elsewhere that justify a choice by "already owned" (raspberry-pi-5.md, gps-denied-navigation.md, ADR-011, ADR-017, siyi-mk15.md, system-requirements NFR-060) are superseded on that point; the technical content is unchanged |
 
 ## DB-3.0 consistency notes
 

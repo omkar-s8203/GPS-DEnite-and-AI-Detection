@@ -119,6 +119,32 @@ Milestones: week 3 design accepted; week 12 map matching proven; week 22 simulat
 
 A team of four is now fully loaded on parallel tracks. If the project must fit two semesters of about 34 weeks, plan for Silver with grid search and treat follow as a stretch goal.
 
+## 1c. Software-first ordering (2026-10-06)
+
+Decided by the project owner: all software is developed and proven in simulation before hardware work begins. No phase is added or removed and the design baseline stays DB-3.0; only the order changes. The step-by-step plan is [development-checklist.md](development-checklist.md), which is the current build order where it differs from the tables below.
+
+| Topic | Earlier plan | Software-first plan |
+|---|---|---|
+| Structure | Three parallel tracks from week 3 | **Part 1** (software in simulation, PC only), then **Part 2** (hardware) |
+| P10 simulated vehicle and world | After VIO and AI | Split: the Gazebo vehicle, cameras and satellite-textured world move to the start, because every vision node is developed against them |
+| P04 camera drivers, calibration | Week 4 | Part 2. In Part 1 the simulated cameras publish on the same topic contracts |
+| P06G map matching | On the team's own site recordings | First on public UAV-to-satellite datasets and in simulation (**gate G2-sim**); the team's own recordings decide **gate G2** in Part 2 |
+| P09 detector | On the Pi | Developed on the PC with public aerial data; Pi speed and own-data fine-tuning in Part 2 |
+| P18 app | On the MK15 from the start | On the Android emulator against the simulation; moved to the MK15 in Part 2 |
+| Gate G0 (MK15 IP path) | Week 2 | First step of Part 2, run as soon as the MK15 and the Pi arrive (the team owns no hardware at the start); until then the app's network layer is kept behind one interface so the fallback in ADR-017 remains possible |
+| Gate G3 | Mid-project | **End of Part 1**: the complete system, driven from the app, in simulation. This is the Bronze result |
+| Procurement | Before week 4 | Ordered about six weeks before the end of Part 1 |
+
+Consequences:
+
+| Consequence | Handling |
+|---|---|
+| The main technical risk (map matching on the real site, gate G2) is answered later than before | Gate G2-sim on public data reduces the method risk early; collecting site photos during Part 1 is recommended so that G2 can be run as soon as Part 1 ends |
+| A simulated world textured with the same image used as the reference makes matching trivially easy | The world texture and the on-board reference must be different images of the same area |
+| Real cameras differ from simulated ones (no hardware sync, rolling shutter, noise) | Simulated sensors are given noise, delay, blur and dropped frames; tuning and some rework are planned in Part 2 |
+| Pi performance is unknown until Part 2 | Node rates and resolutions stay configurable; load shedding is built in Part 1 |
+| Overall length | Unchanged at about 42 weeks: Part 1 about weeks 1 to 22, Part 2 about weeks 22 to 42 |
+
 ## 2. Overview
 
 ```mermaid
