@@ -80,7 +80,7 @@ The Pi never drives ESCs. There is no electrical path from the Pi to the motors.
 
 ```mermaid
 flowchart LR
-    P([Pilot]) --> GU[MK15 ground unit] -. 2.4 GHz .-> AU[MK15 air unit] -- "S.Bus, 16 ch" --> RCIN[Pixhawk RC IN] --> AP[ArduPilot RC input<br/>modes, sticks, aux switches]
+    P([Pilot]) --> GU[MK15 ground unit] -. "2.4 GHz" .-> AU[MK15 air unit] -- "S.Bus, 16 ch" --> RCIN[Pixhawk RC IN] --> AP[ArduPilot RC input<br/>modes, sticks, aux switches]
 ```
 
 - The RC path does not pass through the Pi. Pilot authority is independent of all companion hardware and software.
@@ -103,7 +103,7 @@ Flight modes on channel 5: STABILIZE, ALT_HOLD, LOITER, GUIDED, LAND, RTL.
 
 ```mermaid
 flowchart LR
-    FC[Pixhawk TELEM1] <-- "UART 57600, MAVLink" --> AU[MK15 air unit] <-. 2.4 GHz .-> GU[MK15 ground unit] --> QGC[QGroundControl]
+    FC[Pixhawk TELEM1] <-- "UART 57600, MAVLink" --> AU[MK15 air unit] <-. "2.4 GHz" .-> GU[MK15 ground unit] --> QGC[QGroundControl]
     PI[Raspberry Pi 5 / MAVROS] <-- "UART 921600, MAVLink 2" --> T2[Pixhawk TELEM2]
     T2 -. "MAVLink routing inside ArduPilot<br/>STATUSTEXT, NAMED_VALUE_FLOAT" .-> FC
 ```
@@ -118,7 +118,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     CAM[Left camera image] --> HUD[hud node<br/>overlay: detections, nav mode, confidence]
-    HUD --> KMS[Pi HDMI output<br/>KMS, no desktop] --> CONV[SIYI HDMI converter<br/>H.265 hardware encode] -- Ethernet --> AU[MK15 air unit] -. 2.4 GHz .-> GU[Ground unit display]
+    HUD --> KMS[Pi HDMI output<br/>KMS, no desktop] --> CONV[SIYI HDMI converter<br/>H.265 hardware encode] -- Ethernet --> AU[MK15 air unit] -. "2.4 GHz" .-> GU[Ground unit display]
 ```
 
 Rationale: the Pi 5 has no hardware H.264/H.265 encoder. Encoding in software would cost about one CPU core. The MK15 HDMI combo already includes a hardware encoder, so the Pi only has to render frames to its HDMI output.

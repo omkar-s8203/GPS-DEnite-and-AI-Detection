@@ -189,11 +189,14 @@ documentation/
 ├── 15-bom/                            bill of materials
 ├── 16-development-roadmap/            phases, gates, schedule
 ├── 17-decisions/                      ADR-001 … ADR-014
-└── 18-research/                       research notes (background, not decisions)
+├── 18-research/                       research notes (background, not decisions)
+└── 19-system-architecture-diagrams/   full diagram set: system, hardware, software, app, radio, SDLC, all UML types;
+                                       ready-made PNG and SVG images in rendered/
 ```
 
 | Looking for | Go to |
 |---|---|
+| **A diagram of anything** (whole system, wiring, software parts, app, radio links, life cycle, UML) | [19-system-architecture-diagrams](19-system-architecture-diagrams/README.md) |
 | A requirement ID | [system-requirements.md](01-requirements/system-requirements.md) |
 | Which pin connects to what | [low-level-design.md](03-hardware/low-level-design.md) |
 | A topic name, type or QoS | [interfaces.md](05-ros2/interfaces.md) |

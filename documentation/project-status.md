@@ -181,7 +181,11 @@ Known gaps accepted in this baseline:
 
 | 2026-10-06 | DB-3.0 | Added by the project owner: a native Android app on the MK15 (web app declined), grid search, track and follow. Added: ground-app.md, search-track-follow.md, ADR-017, ADR-018. Amended: requirements (FR-110–131, NFR-080–092, search profile), ROS 2 packages/nodes/interfaces, MK15 topology (B is now baseline; HDMI converter removed; `hud_node` retired), downward camera (1080p), visual geo-localisation (matching height from reference resolution), AI architecture (aerial model), safety (§8b), FMEA (F58–F69), testing (§9b), performance (§4b), roadmap (§1b, ≈ 42 weeks), BOM, budgets (back inside limits), technology selection, README |
 
+| 2026-10-06 | DB-3.0 (diagram set) | Added [19-system-architecture-diagrams](19-system-architecture-diagrams/README.md): 94 diagrams in eight files covering the full system, hardware (whole, wiring, each part), software (whole, each part), Android app, radio and telemetry, the seven-phase software development life cycle, and all 14 UML diagram types; exported as 93 PNG and 93 SVG images in `rendered/`. **All Mermaid diagrams in the documentation were render-tested** with the Mermaid command-line tool: the 94 new ones and the 40 older ones. One older file, `03-hardware/high-level-architecture.md`, failed to render (unquoted "2.4 GHz" link labels) and was fixed. No design content changed |
+
 ## DB-3.0 consistency notes
+
+- Diagrams: every Mermaid block now renders. Earlier notes in this file saying the diagrams were "checked by inspection, not rendered" are superseded.
 
 - Counts: 22 ROS packages plus one Android project, 29 nodes, 18 ADRs, 69 FMEA items, three flight profiles (low 1–10 m, search 25–30 m, cruise 40–60 m).
 - Where older text mentions the HDMI converter, the HUD node or "video topology A", read: removed in DB-3.0; the app shows video over the IP link.
