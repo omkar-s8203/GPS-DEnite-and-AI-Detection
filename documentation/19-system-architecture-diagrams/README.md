@@ -22,6 +22,10 @@ A complete diagram set for the project: the whole system first, then each block 
 | 7 | [07-uml-structural.md](07-uml-structural.md) | UML structural diagrams: class, object, component, composite structure, deployment, package, profile | U1 – U9 |
 | 8 | [08-uml-behavioural.md](08-uml-behavioural.md) | UML behavioural diagrams: use case, activity, state machine, sequence, communication, timing, interaction overview | U10 – U25 |
 
+## Interactive diagram
+
+[interactive/system-explorer.html](interactive/system-explorer.html) is a click-to-expand version of the main diagrams. It opens on the full system; clicking a block outlined in orange opens that block's own diagram (Raspberry Pi software, map matching, localisation, navigation mode, AI detector, missions, grid search, Pixhawk, Android app, request checks, radio link, sensors, power). It holds 14 linked diagrams and is a viewing aid only; the Markdown files remain the reference.
+
 ## Suggested reading order
 
 ```mermaid

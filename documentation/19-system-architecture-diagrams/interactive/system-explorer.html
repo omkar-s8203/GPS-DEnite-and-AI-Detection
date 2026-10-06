@@ -1,0 +1,655 @@
+<title>Drone System Explorer</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an engineering drawing sheet. Outline on the left, one diagram sheet in the middle, notes for the selected block below it. */
+:root {
+  --bg: #EDF0F3;
+  --surface: #FFFFFF;
+  --sheet: #F8FAFB;
+  --ink: #17212E;
+  --muted: #586574;
+  --line: #C3CBD4;
+  --node: #FFFFFF;
+  --node-stroke: #7E8B9A;
+  --accent: #B4532A;
+  --accent-soft: #F6E4DA;
+  --radio: #2B6C8C;
+  --select: #17212E;
+  --font: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', Consolas, 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F151B; --surface: #161E27; --sheet: #121A22; --ink: #E5EAF0; --muted: #98A5B3;
+    --line: #2F3B48; --node: #1B2530; --node-stroke: #6B7A8A; --accent: #E38F62; --accent-soft: #3A2419;
+    --radio: #6FB2D2; --select: #E5EAF0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F151B; --surface: #161E27; --sheet: #121A22; --ink: #E5EAF0; --muted: #98A5B3;
+  --line: #2F3B48; --node: #1B2530; --node-stroke: #6B7A8A; --accent: #E38F62; --accent-soft: #3A2419;
+  --radio: #6FB2D2; --select: #E5EAF0; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1480px; margin: 0 auto; padding-inline: 20px; padding-block: 20px 40px; display: flex; flex-direction: column; gap: 16px; }
+header.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+header.top h1 { font-size: 22px; font-weight: 600; margin: 0; text-wrap: balance; }
+header.top p { margin: 0; color: var(--muted); font-size: 14px; }
+.status { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; }
+.cols { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+nav.outline { background: var(--surface); border: 1px solid var(--line); padding: 14px 12px; }
+nav.outline h2, .notes h2 { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+nav.outline ul { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 1px solid var(--line); }
+nav.outline > ul { padding-left: 0; border-left: 0; }
+nav.outline button { all: unset; display: block; width: 100%; box-sizing: border-box; padding: 4px 8px; font-size: 14px; cursor: pointer; color: var(--ink); border-radius: 3px; }
+nav.outline button:hover { background: var(--accent-soft); }
+nav.outline button:focus-visible, .crumbs button:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+nav.outline button[aria-current="true"] { background: var(--ink); color: var(--bg); }
+main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.sheet { background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+.sheet-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 14px; min-width: 0; }
+.crumbs button { all: unset; cursor: pointer; color: var(--radio); padding: 2px 4px; }
+.crumbs button:hover { text-decoration: underline; }
+.crumbs .sep { color: var(--muted); }
+.crumbs .here { font-weight: 600; padding: 2px 4px; }
+.btn { all: unset; cursor: pointer; font-size: 14px; padding: 5px 12px; border: 1px solid var(--node-stroke); color: var(--ink); background: var(--surface); }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn[disabled] { opacity: .4; cursor: default; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.btn.primary:hover { color: var(--surface); filter: brightness(1.08); }
+.sheet-title { padding: 14px 16px 0; }
+.sheet-title h2 { font-size: 20px; font-weight: 600; margin: 0 0 2px; }
+.sheet-title p { margin: 0; color: var(--muted); max-width: 75ch; }
+.canvas { overflow-x: auto; padding: 8px 8px 4px; background: var(--sheet); margin: 12px 16px 0; border: 1px solid var(--line); }
+.canvas svg { display: block; width: 100%; min-width: 980px; height: auto; }
+.canvas svg.enter { animation: zoomin .28s ease-out; }
+@keyframes zoomin { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .canvas svg.enter { animation: none; } }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 22px; padding: 10px 16px 14px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend svg { flex: none; }
+/* diagram parts */
+.lane-label { font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; fill: var(--muted); }
+.lane-rule { stroke: var(--line); stroke-width: 1; }
+.node rect { fill: var(--node); stroke: var(--node-stroke); stroke-width: 1.2; }
+.node .lbl { font-family: var(--font); font-size: 14.5px; font-weight: 600; fill: var(--ink); }
+.node .sub { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.node { cursor: pointer; outline: none; }
+.node:hover rect { stroke: var(--ink); }
+.node.exp rect { stroke: var(--accent); stroke-width: 2; }
+.node.exp:hover rect { fill: var(--accent-soft); }
+.node .plus-bg { fill: var(--accent); }
+.node .plus { stroke: var(--surface); stroke-width: 2; stroke-linecap: round; }
+.node.sel rect { stroke: var(--select); stroke-width: 2.6; }
+.node:focus-visible rect { stroke: var(--radio); stroke-width: 3; }
+.node.k-data rect { stroke-dasharray: 5 3; }
+.edge { fill: none; stroke: var(--node-stroke); stroke-width: 1.4; }
+.edge.radio { stroke: var(--radio); stroke-dasharray: 7 5; stroke-width: 1.6; }
+.edge.power { stroke: var(--muted); stroke-width: 2.6; opacity: .55; }
+.edge.opt { stroke-dasharray: 2 4; }
+.elabel { font-family: var(--mono); font-size: 10.5px; fill: var(--ink); }
+.elabel-bg { fill: var(--sheet); }
+.arrow { fill: var(--node-stroke); }
+.arrow.radio { fill: var(--radio); }
+.arrow.power { fill: var(--muted); }
+/* notes */
+.notes { background: var(--surface); border: 1px solid var(--line); padding: 16px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px 32px; }
+@media (max-width: 760px) { .notes { grid-template-columns: minmax(0, 1fr); } }
+.notes h3 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+.notes p { margin: 0 0 10px; max-width: 68ch; }
+.notes .kind { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.notes dl { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; font-size: 14px; }
+.notes dt { color: var(--muted); }
+.notes dd { margin: 0; font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+.hint { color: var(--muted); font-size: 14px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>AI-Integrated GPS-Denied Autonomous Drone</h1>
+      <p>Click any block outlined in orange with a plus sign to open it and see how it works inside.</p>
+    </div>
+    <span class="status">Design baseline DB-3.0 · not built yet</span>
+  </header>
+
+  <div class="cols">
+    <nav class="outline" aria-label="All diagrams">
+      <h2>All diagrams</h2>
+      <ul id="tree"></ul>
+    </nav>
+
+    <main>
+      <section class="sheet" aria-label="Diagram">
+        <div class="sheet-head">
+          <div class="crumbs" id="crumbs" aria-label="Where you are"></div>
+          <button class="btn" id="up" type="button">Back up one level</button>
+        </div>
+        <div class="sheet-title">
+          <h2 id="dtitle"></h2>
+          <p id="dsum"></p>
+        </div>
+        <div class="canvas" id="canvas"></div>
+        <div class="legend" aria-label="Legend">
+          <span><svg width="34" height="18" aria-hidden="true"><rect x="1" y="2" width="26" height="14" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="27" cy="9" r="6" fill="var(--accent)"/><path d="M24 9h6M27 6v6" stroke="var(--surface)" stroke-width="1.6"/></svg>Opens to show its inside</span>
+          <span><svg width="34" height="18" aria-hidden="true"><rect x="1" y="2" width="30" height="14" fill="none" stroke="var(--node-stroke)" stroke-width="1.2"/></svg>Click for notes</span>
+          <span><svg width="40" height="10" aria-hidden="true"><path d="M0 5h40" stroke="var(--node-stroke)" stroke-width="1.4"/></svg>Wire or data</span>
+          <span><svg width="40" height="10" aria-hidden="true"><path d="M0 5h40" stroke="var(--radio)" stroke-width="1.6" stroke-dasharray="7 5"/></svg>Radio</span>
+          <span><svg width="40" height="10" aria-hidden="true"><path d="M0 5h40" stroke="var(--muted)" stroke-width="2.6" opacity=".55"/></svg>Power</span>
+        </div>
+      </section>
+
+      <section class="notes" id="notes" aria-live="polite"></section>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ---------- Content: every diagram and every block ----------
+   node: [id, label, sublabel, kind, childDiagramId or null, description, facts[[k,v]...]]
+   kinds: person, hw, sw, link, data, state
+   edge: [from, to, label, kind('data'|'radio'|'power'|'opt'), bidirectional] */
+const D = {};
+
+D.system = { title: 'Full system', sum: 'People on the left, the aircraft on the right, joined by three separate radio paths. The Pixhawk flies the drone; the Raspberry Pi works out where it is and runs missions.',
+ lanes: [
+  ['People', [
+   ['pilot', 'Safety pilot', 'eyes on the drone', 'person', null, 'Holds the remote and can take control at any moment by changing flight mode. The pilot arms the drone; no software can.', [['Authority', 'always wins'], ['Arms the drone', 'pilot only']]],
+   ['operator', 'Operator', 'watches the screen', 'person', null, 'Uses the app to start a search, pick a target and review findings, and calls out mode changes to the pilot.', [['Tools', 'GDN Ground app, QGroundControl']]]]],
+  ['MK15 remote', [
+   ['sticks', 'Sticks and switches', 'RC control', 'hw', null, 'Flight sticks, the flight-mode switch, and switches for position source, emergency stop, simulated GPS loss and autonomy enable.', [['Channels', '16 over S.Bus'], ['Goes to', 'flight controller directly']]],
+   ['qgc', 'QGroundControl', 'standard ground station', 'sw', null, 'Shows attitude, battery, GPS and messages from the flight controller, and edits parameters. Unchanged by this project.', [['Link', 'serial telemetry, MAVLink'], ['Speed', '57600 baud']]],
+   ['app', 'GDN Ground app', 'Android, Kotlin', 'sw', 'app', 'The operator’s mission screen: live video, the map, search, track, follow and findings. It can ask, but it cannot arm the drone or override the pilot.', [['Runs on', 'MK15 ground unit, Android 9'], ['Talks to', 'Raspberry Pi over IP']]]]],
+  ['Radio', [
+   ['link', 'MK15 radio link', '3 separate paths', 'link', 'radio', 'One 2.4 GHz link that carries three independent paths: RC, serial telemetry, and an IP network.', [['Air unit', '100 to 116 g'], ['Paths', 'RC, telemetry, IP']]]]],
+  ['Aircraft computers', [
+   ['pi', 'Raspberry Pi 5', 'vision and missions', 'hw', 'pi', 'Runs Ubuntu 24.04 and ROS 2 Jazzy. Finds position from the satellite map, runs the AI detector, plans missions and serves the app.', [['Role', 'advises the flight controller'], ['If it fails', 'drone still flyable']]],
+   ['fc', 'Pixhawk 6C', 'ArduPilot: flies the drone', 'hw', 'fc', 'The flight controller. Fuses its sensors, stabilises and steers the drone, and owns every failsafe.', [['Firmware', 'ArduPilot Copter 4.7'], ['Role', 'owns flight and safety']]]]],
+  ['Sensors, power, motors', [
+   ['sensors', 'Cameras and sensors', '5 devices', 'hw', 'sensors', 'Downward camera, forward stereo camera with its IMU, GPS with compass, and an optical flow sensor.', [['To the Pi', 'cameras, IMU'], ['To the Pixhawk', 'GPS, compass, flow']]],
+   ['power', 'Battery and power', '4S LiPo', 'hw', 'power', 'One battery feeds everything through separate regulators, so a fault on the Pi supply cannot disturb the flight controller.', [['Avionics', 'about 17.6 W average (estimate)']]],
+   ['motors', 'ESCs and motors', '4 of each', 'hw', null, 'Four speed controllers and brushless motors. Only the flight controller commands them; nothing connects the Pi to the motors.', [['Signal', 'PWM or DShot'], ['Thrust needed', '2 x all-up weight']]]]]],
+ edges: [
+  ['pilot', 'sticks', '', 'data'], ['operator', 'qgc', '', 'data'], ['operator', 'app', '', 'data'],
+  ['sticks', 'link', 'RC', 'radio'], ['qgc', 'link', 'telemetry', 'radio', 1], ['app', 'link', 'IP', 'radio', 1],
+  ['link', 'pi', 'Ethernet', 'data', 1], ['link', 'fc', 'S.Bus + MAVLink', 'data', 1],
+  ['pi', 'fc', 'MAVLink 2', 'data', 1],
+  ['sensors', 'pi', 'images', 'data'], ['sensors', 'fc', 'GPS, flow', 'data'],
+  ['power', 'pi', '', 'power'], ['power', 'fc', '', 'power'], ['fc', 'motors', 'PWM', 'data']] };
+
+D.app = { title: 'GDN Ground app', sum: 'A native Android app on the remote’s own screen. Four screens share one store of drone state, fed by three connections to the Raspberry Pi.',
+ lanes: [
+  ['Screens', [
+   ['live', 'Live', 'video + tap to track', 'sw', null, 'Video with detection boxes drawn by the app, the navigation-mode banner, and Track, Follow and Stop buttons.', [['Tap', 'selects the object in that frame'], ['Stop', 'on every screen']]],
+   ['map', 'Map', 'draw a search area', 'sw', null, 'The drone’s own satellite map, shown offline, with the drone position, uncertainty circle, search lines, covered area and finding pins.', [['Actions', 'Start, Pause, Resume, Abort']]],
+   ['finds', 'Findings', 'what was found', 'sw', null, 'A list of finds with thumbnail, class, confidence and coordinates. Each can be confirmed, rejected, visited or exported.', [['Wording', '"area covered", never "area clear"']]],
+   ['status', 'Status', 'pre-flight GO / NO-GO', 'sw', null, 'Runs the pre-flight check and shows GO or the list of reasons for NO-GO, plus map pack and software versions.', []]]],
+  ['Logic', [
+   ['vm', 'ViewModels', 'one per screen', 'sw', null, 'Turn drone state into what each screen shows, and turn taps into requests.', [['Pattern', 'MVVM']]],
+   ['repo', 'DroneRepository', 'single source of truth', 'sw', null, 'Holds the latest status, detections, target, search progress and findings, and sends requests.', []]]],
+  ['Connections', [
+   ['ctl', 'Control client', 'WebSocket, JSON', 'sw', null, 'Sends requests and receives status, detections, findings, events and acknowledgements.', [['Port', '8765'], ['Heartbeat', '1 Hz']]],
+   ['vid', 'Video client', 'JPEG frames', 'sw', null, 'Receives frames with a frame id so a tap can be matched to the exact picture that was tapped.', [['Port', '8766'], ['Video', '640x480, 10 fps']]],
+   ['tiles', 'Tile cache', 'offline map', 'data', null, 'Map tiles fetched once from the drone and kept on the remote.', [['Port', '8767, HTTP']]],
+   ['db', 'Findings database', 'Room', 'data', null, 'Findings and events stored on the remote for review and export after the flight.', []]]],
+  ['On the Raspberry Pi', [
+   ['gw', 'app_gateway', 'checks every request', 'sw', 'gate', 'The drone side of the app. Validates each request and applies the same gates as any mission before passing it on.', [['Clients', 'one at a time'], ['Cannot', 'arm or change flight mode']]],
+   ['vs', 'video_streamer', '640x480 JPEG', 'sw', null, 'Encodes the selected camera view for the app.', [['Shed', 'first when the Pi is busy']]],
+   ['ts', 'Tile server', 'read-only', 'sw', null, 'Serves map pack tiles to the app.', []]]]],
+ edges: [
+  ['live', 'vm', '', 'data'], ['map', 'vm', '', 'data'], ['finds', 'vm', '', 'data'], ['status', 'vm', '', 'data'],
+  ['vm', 'repo', '', 'data'], ['repo', 'ctl', '', 'data', 1], ['repo', 'vid', '', 'data'], ['repo', 'tiles', '', 'data'], ['repo', 'db', '', 'data', 1],
+  ['ctl', 'gw', 'requests / status', 'radio', 1], ['vs', 'vid', 'video', 'radio'], ['ts', 'tiles', 'tiles', 'radio']] };
+
+D.gate = { title: 'What happens to a request from the app', sum: 'Every request passes four checks in order. Failing any one returns a refusal with a reason the operator can read.',
+ lanes: [
+  ['From the app', [['req', 'Request', 'search, follow, stop…', 'data', null, 'A JSON message such as search_start, select_target, follow_start or hold.', [['Carries', 'an id for the reply']]]]],
+  ['Check 1', [['c1', 'Message valid?', 'key, format, rate', 'sw', null, 'Correct shared key, well-formed message, within the rate limit. Otherwise it is dropped and counted.', []]]],
+  ['Check 2', [['c2', 'Values in range?', 'map, fence, battery', 'sw', null, 'Numbers within limits; a search area must be inside the map, inside the geofence and small enough for the battery.', []]]],
+  ['Check 3', [['c3', 'Pilot allowed it?', 'armed, GUIDED, switch', 'sw', null, 'The pilot has armed, has selected GUIDED mode, and the autonomy switch is on.', []]]],
+  ['Check 4', [['c4', 'Safe right now?', 'safety + nav mode', 'sw', null, 'Safety level is NOMINAL and the navigation mode permits motion.', []]]],
+  ['Result', [
+   ['ok', 'Accepted', 'ack', 'state', null, 'Passed to mission_manager; the app receives an acknowledgement.', []],
+   ['no', 'Refused', 'nack + reason', 'state', null, 'The app shows the reason, for example "pilot has not selected GUIDED".', []]]]],
+ edges: [['req', 'c1', '', 'data'], ['c1', 'c2', 'yes', 'data'], ['c2', 'c3', 'yes', 'data'], ['c3', 'c4', 'yes', 'data'], ['c4', 'ok', 'yes', 'data'], ['c4', 'no', 'no', 'opt']] };
+
+D.radio = { title: 'MK15 radio link', sum: 'Three independent paths over one radio. Losing one does not take down the others on the aircraft side, and the pilot’s path never passes through the Raspberry Pi.',
+ lanes: [
+  ['On the remote', [
+   ['r1', 'Sticks and switches', '', 'hw', null, 'Pilot input.', []],
+   ['r2', 'QGroundControl', '', 'sw', null, 'Standard ground station.', []],
+   ['r3', 'GDN Ground app', '', 'sw', null, 'Mission app.', []]]],
+  ['Path over the radio', [
+   ['p1', 'Path 1: RC', '16 channels', 'link', null, 'Flight-critical. If it is lost the flight controller’s RC failsafe acts.', [['If lost', 'RTL on GPS flights, LAND otherwise']]],
+   ['p2', 'Path 2: telemetry', 'MAVLink, 57600 baud', 'link', null, 'A slow serial link, effectively for one ground station. Status text from the Pi is forwarded here by ArduPilot.', [['If lost', 'flight continues under RC']]],
+   ['p3', 'Path 3: IP network', '192.168.144.x', 'link', null, 'The path SIYI uses for cameras. Carries the app’s control messages, video and map tiles.', [['If lost', 'follow holds after 10 s; search continues, then holds'], ['To verify', 'reachability from a custom app (gate G0)']]]]],
+  ['Air unit port', [
+   ['a1', 'S.Bus out', '', 'hw', null, 'RC output of the air unit.', []],
+   ['a2', 'UART datalink', '', 'hw', null, 'Serial telemetry port of the air unit.', []],
+   ['a3', 'Ethernet', '', 'hw', null, 'Network port of the air unit.', []]]],
+  ['Arrives at', [
+   ['d1', 'Pixhawk RC IN', '', 'hw', null, 'RC input of the flight controller.', []],
+   ['d2', 'Pixhawk TELEM1', '', 'hw', null, 'Telemetry port of the flight controller.', []],
+   ['d3', 'Raspberry Pi Ethernet', '.50, ports 8765-8767', 'hw', null, 'The Pi has a fixed address on the SIYI network.', [['Address', '192.168.144.50']]]]]],
+ edges: [['r1', 'p1', '', 'radio'], ['r2', 'p2', '', 'radio', 1], ['r3', 'p3', '', 'radio', 1],
+  ['p1', 'a1', '', 'radio'], ['p2', 'a2', '', 'radio', 1], ['p3', 'a3', '', 'radio', 1],
+  ['a1', 'd1', 'S.Bus', 'data'], ['a2', 'd2', 'UART', 'data', 1], ['a3', 'd3', 'cable', 'data', 1]] };
+
+D.pi = { title: 'Raspberry Pi 5 software', sum: 'ROS 2 nodes in five groups, left to right: read the sensors, understand them, decide, act, and connect to the outside.',
+ lanes: [
+  ['Drivers', [
+   ['dc', 'down_camera', '1080p, 15 Hz', 'sw', null, 'Publishes downward images: full resolution for the detector and 640x480 for map matching and odometry.', [['Interface', 'USB 2.0, UVC']]],
+   ['sc', 'stereo_camera', 'L+R, 20 Hz', 'sw', null, 'Opens both stereo sensors in one process, keeps them in step in software, and publishes pairs with the same timestamp.', [['Reports', 'left/right skew per pair']]],
+   ['imu', 'imu_driver', '225 Hz', 'sw', null, 'Reads the IMU on the stereo board for low-height stereo odometry.', []]]],
+  ['Perceive', [
+   ['geo', 'Map matching', 'position from the map', 'sw', 'geo', 'Finds the downward image on the stored satellite map about once a second, and tracks motion between matches.', [['Active', 'above 12 m'], ['Nodes', 'map_matcher, ground_vo']]],
+   ['low', 'Stereo vision', 'odometry + depth', 'sw', null, 'Near the ground: stereo visual-inertial odometry for motion and stereo depth for the distance to obstacles ahead.', [['Active', 'below 12 m'], ['Depth range', '0.5 to 6 m']]],
+   ['ai', 'AI detector', 'YOLO26n on NCNN', 'sw', 'ai', 'Names objects. One small model for the forward view near the ground, another for the view from above during search.', [['Role', 'advisory only']]]]],
+  ['Decide', [
+   ['loc', 'Localisation', 'fuses and checks', 'sw', 'loc', 'Combines odometry with GPS or map fixes into one continuous position, and scores how far it can be trusted.', [['Output', 'pose at 20 to 30 Hz']]],
+   ['nav', 'Navigation mode', 'GPS, map or fallback', 'sw', 'navmode', 'Watches GPS health and chooses which position source the flight controller should use.', [['Decides GPS lost', 'within 3 s']]],
+   ['saf', 'Safety supervisor', 'watchdog', 'sw', null, 'Checks every node’s heartbeat, temperature and load. It can forbid setpoints; it never commands motion.', [['Sheds first', 'video, then AI']]]]],
+  ['Act', [
+   ['mis', 'Missions', 'search, track, follow', 'sw', 'mission', 'Runs one behaviour at a time: grid search, tracking, follow from above, go to a finding, or hold.', []],
+   ['navg', 'navigator', 'setpoints, 20 Hz', 'sw', null, 'Turns a goal into velocity or position setpoints, limited by navigation mode, confidence and obstacles.', [['Only when', 'pilot selected GUIDED']]]]],
+  ['Connect', [
+   ['mav', 'mavros', 'to the Pixhawk', 'sw', null, 'The MAVLink bridge. The only place where ROS coordinates are converted to the flight controller’s.', [['Link', 'UART 921600 baud']]],
+   ['gw2', 'app_gateway', 'to the app', 'sw', 'gate', 'Serves the Android app and checks every request.', [['Link', 'Ethernet to the MK15 air unit']]]]]],
+ edges: [['dc', 'geo', '', 'data'], ['dc', 'ai', '', 'data'], ['sc', 'low', '', 'data'], ['imu', 'low', '', 'data'], ['sc', 'ai', '', 'opt'],
+  ['geo', 'loc', 'fix + odometry', 'data'], ['low', 'loc', 'odometry', 'data'], ['ai', 'mis', 'detections', 'data'],
+  ['loc', 'nav', 'confidence', 'data'], ['nav', 'navg', 'speed limit', 'data'], ['saf', 'navg', 'allow', 'data'], ['mis', 'navg', 'goals', 'data'],
+  ['navg', 'mav', 'setpoints', 'data'], ['loc', 'mav', 'pose', 'data'], ['mis', 'gw2', 'findings', 'data', 1]] };
+
+D.geo = { title: 'Map matching', sum: 'How a picture of the ground becomes a position. Attitude, heading and height are already known, so the search is only for east and north.',
+ lanes: [
+  ['Inputs', [
+   ['i1', 'Downward image', '640x480', 'data', null, 'The newest picture of the ground.', []],
+   ['i2', 'Attitude and height', 'from the Pixhawk', 'data', null, 'Roll, pitch, heading and height above ground at the moment the picture was taken.', []],
+   ['i3', 'Map pack', 'tiles + features', 'data', null, 'The stored satellite image, cut into tiles, with features computed in advance on a laptop.', [['Needs', 'licence allowing offline use']]],
+   ['i4', 'Predicted position', 'last fix + motion', 'data', null, 'Where the drone expects to be, and how uncertain that is.', []]]],
+  ['Prepare', [
+   ['s1', 'Level and turn north-up', 'scale to map', 'sw', null, 'Removes lens distortion and tilt, rotates the picture so north is up, and scales it to the map’s resolution.', []],
+   ['s2', 'Choose search window', '40 to 200 m', 'sw', null, 'Picks the part of the map around the predicted position; a larger window when uncertainty is larger.', []]]],
+  ['Match', [
+   ['s3', 'Extract features', 'SIFT', 'sw', null, 'Finds distinctive points in the picture. A lightweight learned matcher (XFeat) will be compared on the same recordings.', []],
+   ['s4', 'Match and verify', 'RANSAC', 'sw', null, 'Pairs picture points with map points, then keeps only pairs that agree on one shift, small rotation and scale.', []]]],
+  ['Decide', [
+   ['s5', 'Gates', '4 checks', 'sw', null, 'Enough matching points; a sensible share of inliers; close to the predicted position; agrees with the previous fix.', [['Min inliers', '12'], ['Min ratio', '0.25']]]]],
+  ['Output', [
+   ['o1', 'Accepted fix', 'about 1 per second', 'state', null, 'A position with its uncertainty, sent to the localisation filter.', [['Target error', '5 m or less (not yet measured)']]],
+   ['o2', 'Rejected', 'logged with reason', 'state', null, 'Never used as a position. While GPS is good, every fix is also compared with GPS and logged.', []],
+   ['o3', 'ground_vo', 'motion, 15 Hz', 'sw', null, 'From the same camera: tracks ground features from frame to frame to measure motion between fixes.', [['Scale', 'height x pixels / focal length']]]]]],
+ edges: [['i1', 's1', '', 'data'], ['i2', 's1', '', 'data'], ['i3', 's2', '', 'data'], ['i4', 's2', '', 'data'],
+  ['s1', 's3', '', 'data'], ['s2', 's4', '', 'data'], ['s3', 's4', '', 'data'], ['s4', 's5', '', 'data'],
+  ['s5', 'o1', 'pass', 'data'], ['s5', 'o2', 'fail', 'opt'], ['i1', 'o3', '', 'opt']] };
+
+D.loc = { title: 'Localisation', sum: 'Smooth but drifting odometry is corrected by an absolute source: GPS while it is good, map fixes when it is not.',
+ lanes: [
+  ['Motion sources', [
+   ['m1', 'ground_vo', 'above 12 m', 'sw', null, 'Motion from the downward camera.', []],
+   ['m2', 'Stereo odometry', 'below 12 m', 'sw', null, 'Motion from the forward stereo camera and its IMU.', []]]],
+  ['Absolute sources', [
+   ['a1', 'GPS-based pose', 'while GPS is good', 'data', null, 'The flight controller’s own position, used to line the vision frame up with it.', []],
+   ['a2', 'Map fixes', 'when GPS is denied', 'data', null, 'Accepted fixes from map matching.', []]]],
+  ['Fuse', [
+   ['f1', 'Source selector', 'vio_monitor', 'sw', null, 'Chooses the motion source by height and checks its health.', []],
+   ['f2', 'Offset filter', 'Kalman filter', 'sw', null, 'Estimates the offset between the drifting odometry frame and the map. Rejects fixes that do not fit.', [['State', 'east and north offset']]],
+   ['f3', 'Apply slowly', '0.5 m/s at most', 'sw', null, 'Corrections are fed in gradually so the position sent to the flight controller never jumps.', []]]],
+  ['Check', [
+   ['c1', 'Cross-checks', 'attitude, gyro, baro', 'sw', null, 'Compares vision against the flight controller’s independent sensors, which stay valid without GPS.', []],
+   ['c2', 'Confidence', '0 to 1', 'sw', null, 'The lowest of all the checks. Drops fast, recovers slowly.', [['High', '0.7 and above']]]]],
+  ['Output', [
+   ['x1', 'Pose to the Pixhawk', '20 to 30 Hz', 'data', null, 'Sent as a MAVLink ODOMETRY message.', []],
+   ['x2', 'Status', 'to navigation mode', 'data', null, 'Confidence, position uncertainty and time since the last fix.', []]]]],
+ edges: [['m1', 'f1', '', 'data'], ['m2', 'f1', '', 'data'], ['f1', 'f2', 'odometry', 'data'], ['a1', 'f2', '', 'data'], ['a2', 'f2', '', 'data'],
+  ['f2', 'f3', '', 'data'], ['f3', 'x1', '', 'data'], ['f2', 'c2', 'uncertainty', 'data'], ['c1', 'c2', '', 'data'], ['c2', 'x2', '', 'data']] };
+
+D.navmode = { title: 'Navigation mode', sum: 'A state machine. It moves right as position sources are lost and back left as they return. The pilot can override it with a switch.',
+ lanes: [
+  ['Start', [
+   ['n0', 'BOOT', '', 'state', null, 'Nodes are starting.', []],
+   ['n1', 'SENSOR_CHECK', '', 'state', null, 'Cameras, IMU, calibration, link, map pack and temperature are checked.', []],
+   ['n2', 'READY', '', 'state', null, 'All checks passed; waiting for the pilot to arm.', []]]],
+  ['On GPS', [
+   ['n3', 'GPS_NAV', 'source 1', 'state', null, 'GPS is good. Map matching runs in the background and is compared with GPS.', [['Speed limit', '2 m/s']]],
+   ['n4', 'GPS_DEGRADED', 'source 1', 'state', null, 'GPS is getting worse. The alignment is frozen at its value from 5 s earlier.', [['Speed limit', '1 m/s']]]]],
+  ['On vision', [
+   ['n5', 'VISION_NAV', 'source 2', 'state', null, 'GPS denied. The flight controller uses the map position. The mission continues at reduced speed.', [['Speed limit', '3 m/s at height']]],
+   ['n6', 'VISION_DEGRADED', 'source 2', 'state', null, 'No map fix for 20 s or confidence low. The drone holds position.', []]]],
+  ['Fallback', [
+   ['n7', 'FLOW_FALLBACK', 'source 3', 'state', null, 'Vision lost near the ground. The flight controller holds on its own optical flow sensor.', [['Only', 'below 8 m']]],
+   ['n8', 'LOCALIZATION_LOST', 'no source', 'state', null, 'No position source. The pilot takes over, or the drone lands.', []]]],
+  ['Recovery', [
+   ['n9', 'GPS_RECOVERY', '', 'state', null, 'GPS has been good for 10 s. The drone slows before switching back, because position may step by a few metres.', []]]]],
+ edges: [['n0', 'n1', '', 'data'], ['n1', 'n2', '', 'data'], ['n2', 'n3', 'armed', 'data'], ['n3', 'n4', '', 'data', 1],
+  ['n4', 'n5', 'GPS denied', 'data'], ['n5', 'n6', '', 'data', 1], ['n6', 'n7', 'low', 'data'], ['n6', 'n8', '60 s', 'data'],
+  ['n7', 'n8', '', 'data'], ['n5', 'n9', 'GPS back', 'data'], ['n9', 'n3', 'switch back', 'opt']] };
+
+D.ai = { title: 'AI detector', sum: 'One detector process with two models. Which one runs depends on how high the drone is. It names objects; geometry gives their distance or coordinates.',
+ lanes: [
+  ['Which view?', [['q', 'Flight profile', 'chosen by height', 'sw', null, 'The navigation-mode manager switches the detector’s input and model.', []]]],
+  ['Input', [
+   ['g1', 'Forward image', '320 px', 'data', null, 'Left stereo image, near the ground.', [['Profile', 'LOW, 1 to 10 m']]],
+   ['g2', 'Downward image', '1080p, 6 tiles', 'data', null, 'Cut into overlapping tiles so small objects keep enough pixels.', [['Profile', 'SEARCH, 25 to 30 m']]]]],
+  ['Model', [
+   ['h1', 'Ground-view model', '5 Hz', 'sw', null, 'People and vehicles seen from the side.', []],
+   ['h2', 'Aerial-view model', 'about 1 Hz', 'sw', null, 'People and vehicles seen from above. Trained on aerial pictures, including the team’s own.', [['Person from 25 m', 'about 16 px wide']]]]],
+  ['Where is it?', [
+   ['k1', 'Distance from depth', 'stereo', 'sw', null, 'Samples the stereo depth image inside the box.', [['Reliable to', '6 to 8 m']]],
+   ['k2', 'Project to the ground', 'geometry', 'sw', null, 'Uses the drone’s position, attitude and height to turn a pixel into coordinates.', []]]],
+  ['Result', [
+   ['z1', 'Object + distance', 'ahead', 'state', null, 'For the obstacle and low-height demonstrations.', []],
+   ['z2', 'Object + coordinates', 'latitude, longitude', 'state', null, 'For search findings and for tracking from above.', []]]]],
+ edges: [['q', 'g1', 'low', 'data'], ['q', 'g2', 'search', 'data'], ['g1', 'h1', '', 'data'], ['g2', 'h2', '', 'data'],
+  ['h1', 'k1', '', 'data'], ['h2', 'k2', '', 'data'], ['k1', 'z1', '', 'data'], ['k2', 'z2', '', 'data']] };
+
+D.mission = { title: 'Missions', sum: 'Requests from the app become one active behaviour. Everything ends in the navigator, which only sends setpoints while the pilot allows it.',
+ lanes: [
+  ['Request', [
+   ['q1', 'Start search', 'polygon', 'data', null, 'An area drawn on the map, with height and line overlap.', []],
+   ['q2', 'Tap to track', 'frame + point', 'data', null, 'The frame that was tapped and where.', []],
+   ['q3', 'Follow', '', 'data', null, 'Follow the tracked object from above.', []],
+   ['q4', 'Stop', 'hold', 'data', null, 'Stop moving and hold position.', []]]],
+  ['Coordinator', [['mm', 'mission_manager', 'one behaviour at a time', 'sw', null, 'Starts and stops behaviours and applies the rule for losing the app link.', []]]],
+  ['Behaviour', [
+   ['b1', 'Grid search', 'search_planner', 'sw', 'search', 'Plans back-and-forth lines over the area and flies them one by one.', [['Height', '25 to 30 m'], ['Area per battery', '3 to 5 ha (estimate)']]],
+   ['b2', 'Tracking', 'target_tracker', 'sw', null, 'Keeps an estimate of the chosen object’s position and speed on the ground.', [['Lost after', '3 s unseen']]],
+   ['b3', 'Follow from above', '20 m or higher', 'sw', null, 'Keeps the target under the drone. Never descends on its own, and stops at the fence or map edge.', [['Target speed', 'up to about 2.5 m/s']]],
+   ['b4', 'Findings', 'finding_manager', 'sw', null, 'Turns detections into pinned finds, once the same place has been seen in three frames.', []]]],
+  ['Motion', [['nv', 'navigator', 'speed-limited', 'sw', null, 'Speed is the lowest of the mode limit, the confidence limit and the obstacle limit.', []]]],
+  ['Out', [
+   ['o1', 'Setpoints', 'to the Pixhawk', 'data', null, 'Velocity or position targets in GUIDED mode.', []],
+   ['o2', 'Pins and progress', 'to the app', 'data', null, 'Findings, covered area, target state.', []]]]],
+ edges: [['q1', 'mm', '', 'data'], ['q2', 'mm', '', 'data'], ['q3', 'mm', '', 'data'], ['q4', 'mm', '', 'data'],
+  ['mm', 'b1', '', 'data'], ['mm', 'b2', '', 'data'], ['mm', 'b3', '', 'data'], ['b2', 'b3', '', 'opt'],
+  ['b1', 'nv', '', 'data'], ['b3', 'nv', '', 'data'], ['nv', 'o1', '', 'data'], ['b4', 'o2', '', 'data'], ['b1', 'o2', '', 'opt']] };
+
+D.search = { title: 'Grid search', sum: 'From a drawn area to pins on the map. The result is always reported as "area covered", never "area clear".',
+ lanes: [
+  ['1 Ask', [['a', 'Area from the app', 'polygon, height', 'data', null, 'Drawn by the operator on the map screen.', []]]],
+  ['2 Check', [['b', 'Valid?', 'map, fence, battery', 'sw', null, 'Inside map coverage by 60 m, inside the geofence, and small enough for the battery. Otherwise refused with the reason.', []]]],
+  ['3 Plan', [['c', 'Plan lines', 'back and forth', 'sw', null, 'Lines along the longest side, spaced so neighbouring camera strips overlap by 30 %.', [['Spacing at 25 m', '42 m']]]]],
+  ['4 Fly', [
+   ['d', 'Fly a line', '3 m/s or less', 'sw', null, 'Nose-first at fixed height. Pauses if localisation degrades; aborts if the pilot changes mode.', []],
+   ['e', 'Look down', 'aerial detector', 'sw', null, 'About one full picture per second.', []]]],
+  ['5 Confirm', [['f', 'Seen 3 times?', 'same place', 'sw', null, 'A find is raised only when the same spot is detected in three frames.', []]]],
+  ['6 Report', [
+   ['g', 'Pin the find', 'coordinates + photo', 'state', null, 'Sent to the app with class, confidence, coordinates and a thumbnail.', [['Target error', '8 m or less without GPS']]],
+   ['h', 'Area covered', 'at the end', 'state', null, 'The coverage actually recorded by the camera, shown on the map.', []]]]],
+ edges: [['a', 'b', '', 'data'], ['b', 'c', 'yes', 'data'], ['c', 'd', '', 'data'], ['d', 'e', '', 'data'], ['e', 'f', '', 'data'], ['f', 'g', 'yes', 'data'], ['d', 'h', 'last line', 'opt']] };
+
+D.fc = { title: 'Pixhawk 6C flight controller', sum: 'ArduPilot fuses the sensors, flies the drone and owns every failsafe. The position source is one of three, chosen at run time.',
+ lanes: [
+  ['Position inputs', [
+   ['i1', 'GPS', 'source 1', 'data', null, 'Normal outdoor flight.', []],
+   ['i2', 'Position from the Pi', 'source 2', 'data', null, 'Map matching plus odometry, or stereo odometry near the ground.', []],
+   ['i3', 'Optical flow', 'source 3', 'data', null, 'Backup that does not need the Pi. Only below 8 m.', []]]],
+  ['Estimate', [
+   ['s', 'Source selector', '1, 2 or 3', 'sw', null, 'Set by the Pi’s request, by the pilot’s switch, or by the watchdog script.', []],
+   ['e', 'EKF3', '24 states', 'sw', null, 'The state estimator. Also uses the IMUs, barometer and compass inside the Pixhawk.', [['Authoritative', 'the state used for flying']]]]],
+  ['Command inputs', [
+   ['r', 'Pilot RC', 'mode + sticks', 'data', null, 'Always takes priority.', []],
+   ['g', 'Setpoints from the Pi', 'GUIDED only', 'data', null, 'Velocity or position targets; ignored unless the pilot chose GUIDED.', [['Timeout', 'drone stops after 1 to 2 s']]],
+   ['o', 'Obstacle distances', 'from the Pi', 'data', null, 'Stereo depth turned into sector distances.', []]]],
+  ['Control', [
+   ['m', 'Flight mode logic', '', 'sw', null, 'Decides what the drone should do from the mode, failsafes and watchdog.', []],
+   ['p', 'Position + attitude control', '', 'sw', null, 'Closes the fast loops that keep the drone stable.', []],
+   ['f', 'Failsafes', 'RC, battery, EKF, fence', 'sw', null, 'Act independently of the Pi and the app.', []],
+   ['w', 'Lua watchdog', 'is the Pi alive?', 'sw', null, 'If the Pi goes silent for 2 s in GUIDED: brake, then loiter or hold height.', []]]],
+  ['Output', [['x', 'Motor mixer', 'to 4 ESCs', 'sw', null, 'Turns control demands into four motor commands.', []]]]],
+ edges: [['i1', 's', '', 'data'], ['i2', 's', '', 'data'], ['i3', 's', '', 'data'], ['s', 'e', '', 'data'],
+  ['e', 'p', 'state', 'data'], ['r', 'm', '', 'data'], ['g', 'p', '', 'data'], ['o', 'p', 'stop', 'opt'],
+  ['m', 'p', '', 'data'], ['f', 'm', '', 'data'], ['w', 'm', '', 'data'], ['p', 'x', '', 'data']] };
+
+D.sensors = { title: 'Cameras and sensors', sum: 'Five devices. Cameras and their IMU go to the Raspberry Pi; GPS, compass and the flow sensor go to the Pixhawk.',
+ lanes: [
+  ['Device', [
+   ['c1', 'Downward camera', '1080p, wide lens', 'hw', null, 'Looks at the ground: for map matching, ground odometry and search.', [['Status', 'to buy; model open']]],
+   ['c2', 'Stereo camera', '2 x IMX219, 60 mm', 'hw', null, 'Faces forward: distance to obstacles and the ground-view detector. No hardware synchronisation between the two sensors.', [['Status', 'owned']]],
+   ['c3', 'IMU on the stereo board', 'ICM-20948', 'hw', null, 'Motion sensing for stereo odometry.', []],
+   ['c4', 'GPS + compass', 'M10, on a mast', 'hw', null, 'Position and heading for normal flight, and the truth against which map matching is measured.', []],
+   ['c5', 'Optical flow + range', 'MTF-01', 'hw', null, 'A small downward sensor giving ground speed and height up to 8 m.', []]]],
+  ['Interface', [
+   ['w1', 'USB 2.0', 'UVC, MJPEG', 'link', null, 'USB 3 is avoided because it disturbs GPS reception.', []],
+   ['w2', '2 x CSI-2', '', 'link', null, 'One camera port of the Pi per sensor.', []],
+   ['w3', 'I2C', '400 kHz', 'link', null, '', []],
+   ['w4', 'UART + I2C', 'GPS1 port', 'link', null, '', []],
+   ['w5', 'UART, MAVLink', 'TELEM3 port', 'link', null, '', []]]],
+  ['Goes to', [
+   ['t1', 'Raspberry Pi 5', '', 'hw', null, 'Vision computer.', []],
+   ['t2', 'Pixhawk 6C', '', 'hw', null, 'Flight controller.', []]]]],
+ edges: [['c1', 'w1', '', 'data'], ['c2', 'w2', '', 'data'], ['c3', 'w3', '', 'data'], ['c4', 'w4', '', 'data'], ['c5', 'w5', '', 'data'],
+  ['w1', 't1', '', 'data'], ['w2', 't1', '', 'data'], ['w3', 't1', '', 'data'], ['w4', 't2', '', 'data'], ['w5', 't2', '', 'data']] };
+
+D.power = { title: 'Battery and power', sum: 'One battery, separate regulators. The Pi and the flight controller share only ground and signals.',
+ lanes: [
+  ['Source', [['b', '4S LiPo battery', '12.8 to 16.8 V', 'hw', null, 'About 5000 mAh; roughly 11 to 13 minutes of hover (estimate).', []]]],
+  ['Measure', [['pm', 'PM02 power module', 'voltage + current', 'hw', null, 'Measures the battery for the flight controller’s battery failsafe, and makes its 5.2 V supply.', []]]],
+  ['Distribute', [
+   ['pdb', 'Power distribution', 'fused branches', 'hw', null, 'Battery voltage to the motors, the Pi regulator and the radio.', []],
+   ['fcp', 'Pixhawk 6C', '5.2 V', 'hw', null, 'Powered by the power module, independent of the Pi.', []]]],
+  ['Regulate', [
+   ['bec', 'BEC', '5.1 V, 5 A', 'hw', null, 'A dedicated regulator for the Raspberry Pi.', [['Fuse', '3 A on the input']]],
+   ['esc', '4 x ESC', 'battery voltage', 'hw', null, 'Motor speed controllers.', [['Hover current', '18 to 22 A (estimate)']]],
+   ['au', 'MK15 air unit', 'battery voltage', 'hw', null, 'About 3 W on average.', [['Check', '4S support on the owned unit']]],
+   ['per', 'GPS + flow sensor', '5 V from Pixhawk', 'hw', null, 'Small loads powered from the flight controller’s ports.', []]]],
+  ['Load', [
+   ['pi', 'Raspberry Pi 5', 'about 8 W', 'hw', null, 'Also powers both cameras and its cooling fan.', []],
+   ['mot', '4 x motor', '', 'hw', null, '', []]]]],
+ edges: [['b', 'pm', '', 'power'], ['pm', 'pdb', '', 'power'], ['pm', 'fcp', '5.2 V', 'power'], ['pdb', 'bec', '', 'power'], ['pdb', 'esc', '', 'power'], ['pdb', 'au', '', 'power'],
+  ['fcp', 'per', '', 'power'], ['bec', 'pi', '5.1 V', 'power'], ['esc', 'mot', '', 'power']] };
+
+const KIND = { person: 'Person', hw: 'Hardware', sw: 'Software', link: 'Link', data: 'Data', state: 'State or result' };
+
+/* ---------- Tree of diagrams (for outline and breadcrumbs) ---------- */
+const parentOf = {};
+(function walk(id, seen) {
+  D[id].lanes.forEach(l => l[1].forEach(n => {
+    const c = n[4];
+    if (c && !seen.has(c)) { seen.add(c); parentOf[c] = id; walk(c, seen); }
+  }));
+})('system', new Set(['system']));
+
+function pathTo(id) { const p = []; let c = id; while (c) { p.unshift(c); c = parentOf[c]; } return p; }
+
+/* ---------- Layout and drawing ---------- */
+const NW = 198, NH = 62, GX = 150, GY = 32, PAD = 24, HEAD = 34;
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function wrap(text, max) {
+  const words = text.split(' '); const lines = []; let cur = '';
+  words.forEach(w => { if ((cur + ' ' + w).trim().length > max && cur) { lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); });
+  if (cur) lines.push(cur);
+  return lines.slice(0, 2);
+}
+
+let current = 'system', selected = null;
+
+function draw(id, animate) {
+  const dia = D[id];
+  const cols = dia.lanes.length;
+  const maxRows = Math.max(...dia.lanes.map(l => l[1].length));
+  const W = PAD * 2 + cols * NW + (cols - 1) * GX;
+  const bodyH = maxRows * NH + (maxRows - 1) * GY;
+  const H = HEAD + bodyH + PAD * 2;
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'group', 'aria-label': dia.title });
+  if (animate) svg.classList.add('enter');
+  const defs = el('defs', {}, svg);
+  ['data', 'radio', 'power'].forEach(k => {
+    const m = el('marker', { id: 'ah-' + k, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0 0L10 5L0 10z', class: 'arrow ' + (k === 'data' ? '' : k) }, m);
+  });
+
+  const pos = {};
+  dia.lanes.forEach((lane, ci) => {
+    const x = PAD + ci * (NW + GX);
+    const t = el('text', { x: x, y: PAD + 4, class: 'lane-label' }, svg); t.textContent = lane[0];
+    el('line', { x1: x, y1: PAD + 12, x2: x + NW, y2: PAD + 12, class: 'lane-rule' }, svg);
+    const n = lane[1].length;
+    const laneH = n * NH + (n - 1) * GY;
+    const y0 = HEAD + PAD + (bodyH - laneH) / 2;
+    lane[1].forEach((node, ri) => { pos[node[0]] = { x: x, y: y0 + ri * (NH + GY), c: ci, r: ri, node: node }; });
+  });
+
+  // edges: decide sides, then spread attachment points along each side
+  const ends = [];
+  dia.edges.forEach((e, i) => {
+    const a = pos[e[0]], b = pos[e[1]]; if (!a || !b) return;
+    let sa, sb;
+    if (b.c > a.c) { sa = 'R'; sb = 'L'; }
+    else if (b.c < a.c) { sa = 'L'; sb = 'R'; }
+    else if (Math.abs(b.r - a.r) === 1) { sa = b.r > a.r ? 'B' : 'T'; sb = b.r > a.r ? 'T' : 'B'; }
+    else { sa = 'R'; sb = 'R'; }
+    ends.push({ i: i, e: e, a: a, b: b, sa: sa, sb: sb });
+  });
+  const slots = {};
+  ends.forEach(x => {
+    (slots[x.e[0] + x.sa] = slots[x.e[0] + x.sa] || []).push({ x: x, end: 'a', other: x.b });
+    (slots[x.e[1] + x.sb] = slots[x.e[1] + x.sb] || []).push({ x: x, end: 'b', other: x.a });
+  });
+  for (const key in slots) {
+    const list = slots[key]; const side = key.slice(-1);
+    list.sort((p, q) => (side === 'T' || side === 'B') ? p.other.x - q.other.x : (p.other.y - q.other.y) || (p.other.x - q.other.x));
+    list.forEach((s, k) => {
+      const n = s.end === 'a' ? s.x.a : s.x.b;
+      const f = (k + 1) / (list.length + 1);
+      let px, py;
+      if (side === 'R') { px = n.x + NW; py = n.y + NH * f; }
+      else if (side === 'L') { px = n.x; py = n.y + NH * f; }
+      else if (side === 'T') { px = n.x + NW * f; py = n.y; }
+      else { px = n.x + NW * f; py = n.y + NH; }
+      s.x['p' + s.end] = [px, py];
+    });
+  }
+  const gE = el('g', {}, svg), gL = el('g', {}, svg);
+  ends.forEach(x => {
+    const [x1, y1] = x.pa, [x2, y2] = x.pb; let d, lx, ly;
+    if (x.sa === 'B' || x.sa === 'T') { d = `M${x1} ${y1}L${x2} ${y2}`; lx = (x1 + x2) / 2; ly = (y1 + y2) / 2; }
+    else if (x.sa === x.sb) { const bx = Math.max(x1, x2) + 46; d = `M${x1} ${y1}C${bx} ${y1} ${bx} ${y2} ${x2} ${y2}`; lx = bx - 12; ly = (y1 + y2) / 2; }
+    else { const mx = (x1 + x2) / 2; d = `M${x1} ${y1}C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}`; lx = mx; ly = (y1 + y2) / 2; }
+    const kind = x.e[3] || 'data';
+    const mk = kind === 'opt' ? 'data' : kind;
+    const attrs = { d: d, class: 'edge ' + kind, 'marker-end': `url(#ah-${mk})` };
+    if (x.e[4]) attrs['marker-start'] = `url(#ah-${mk})`;
+    el('path', attrs, gE);
+    if (x.e[2]) {
+      const w = x.e[2].length * 6.5 + 10;
+      el('rect', { x: lx - w / 2, y: ly - 8, width: w, height: 16, class: 'elabel-bg' }, gL);
+      const t = el('text', { x: lx, y: ly + 3.6, 'text-anchor': 'middle', class: 'elabel' }, gL); t.textContent = x.e[2];
+    }
+  });
+
+  // nodes
+  for (const nid in pos) {
+    const p = pos[nid], n = p.node, kind = n[3], child = n[4];
+    const g = el('g', { class: 'node k-' + kind + (child ? ' exp' : '') + (selected === nid ? ' sel' : ''), tabindex: 0, role: 'button',
+      'aria-label': n[1] + (child ? ', opens to show its inside' : ', show notes'), 'data-id': nid }, svg);
+    const rx = kind === 'person' ? NH / 2 : kind === 'state' ? 18 : kind === 'sw' ? 7 : kind === 'link' ? 12 : 1;
+    el('rect', { x: p.x, y: p.y, width: NW, height: NH, rx: rx }, g);
+    const lines = wrap(n[1], 24); const hasSub = !!n[2];
+    const total = lines.length * 17 + (hasSub ? 15 : 0);
+    let ty = p.y + (NH - total) / 2 + 13;
+    const tx = p.x + NW / 2;
+    lines.forEach(s => { const t = el('text', { x: tx, y: ty, 'text-anchor': 'middle', class: 'lbl' }, g); t.textContent = s; ty += 17; });
+    if (hasSub) { const t = el('text', { x: tx, y: ty - 1, 'text-anchor': 'middle', class: 'sub' }, g); t.textContent = n[2]; }
+    if (child) {
+      const cx = p.x + NW - 3, cy = p.y + 3;
+      el('circle', { cx: cx, cy: cy, r: 10, class: 'plus-bg' }, g);
+      el('path', { d: `M${cx - 5} ${cy}h10M${cx} ${cy - 5}v10`, class: 'plus' }, g);
+    }
+    const act = () => { if (child) go(child); else { selected = nid; render(false); } };
+    g.addEventListener('click', act);
+    g.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); act(); } });
+  }
+  return svg;
+}
+
+/* ---------- Page parts ---------- */
+function findNode(diaId, nid) { for (const l of D[diaId].lanes) for (const n of l[1]) if (n[0] === nid) return n; return null; }
+function entryNode(diaId) { // the block in the parent that opens this diagram
+  const p = parentOf[diaId]; if (!p) return null;
+  for (const l of D[p].lanes) for (const n of l[1]) if (n[4] === diaId) return n; return null;
+}
+function h(tag, text, cls) { const e = document.createElement(tag); if (text != null) e.textContent = text; if (cls) e.className = cls; return e; }
+
+function renderNotes() {
+  const box = document.getElementById('notes'); box.textContent = '';
+  const left = h('div'), right = h('div');
+  const n = selected ? findNode(current, selected) : null;
+  if (n) {
+    left.appendChild(h('h2', 'Selected block'));
+    left.appendChild(h('h3', n[1]));
+    left.appendChild(h('div', KIND[n[3]] + (n[2] ? ' · ' + n[2] : ''), 'kind'));
+    left.appendChild(h('p', n[5] || 'No further notes for this block.'));
+    if (n[4]) { const b = h('button', 'Open this block', 'btn primary'); b.type = 'button'; b.addEventListener('click', () => go(n[4])); left.appendChild(b); }
+    right.appendChild(h('h2', 'Key facts'));
+    if (n[6] && n[6].length) { const dl = h('dl'); n[6].forEach(f => { dl.appendChild(h('dt', f[0])); dl.appendChild(h('dd', f[1])); }); right.appendChild(dl); }
+    else right.appendChild(h('p', 'None recorded.', 'hint'));
+  } else {
+    const en = entryNode(current);
+    left.appendChild(h('h2', 'About this diagram'));
+    left.appendChild(h('h3', D[current].title));
+    left.appendChild(h('p', en ? en[5] : D[current].sum));
+    left.appendChild(h('p', 'Click a block for its notes. Blocks outlined in orange with a plus sign open into their own diagram.', 'hint'));
+    right.appendChild(h('h2', en && en[6].length ? 'Key facts' : 'How to move around'));
+    if (en && en[6].length) { const dl = h('dl'); en[6].forEach(f => { dl.appendChild(h('dt', f[0])); dl.appendChild(h('dd', f[1])); }); right.appendChild(dl); }
+    else { const dl = h('dl');
+      [['Open a block', 'click it, or Enter'], ['Go back up', 'button above, or Esc'], ['Jump anywhere', 'list on the left'], ['Numbers', 'design targets and estimates']].forEach(f => { dl.appendChild(h('dt', f[0])); dl.appendChild(h('dd', f[1])); });
+      right.appendChild(dl); }
+  }
+  box.appendChild(left); box.appendChild(right);
+}
+
+function renderCrumbs() {
+  const c = document.getElementById('crumbs'); c.textContent = '';
+  const p = pathTo(current);
+  p.forEach((id, i) => {
+    if (i) c.appendChild(h('span', '›', 'sep'));
+    if (i === p.length - 1) c.appendChild(h('span', D[id].title, 'here'));
+    else { const b = h('button', D[id].title); b.type = 'button'; b.addEventListener('click', () => go(id)); c.appendChild(b); }
+  });
+  document.getElementById('up').disabled = !parentOf[current];
+}
+
+function renderTree() {
+  const root = document.getElementById('tree'); root.textContent = '';
+  (function add(id, ul) {
+    const li = h('li'); const b = h('button', D[id].title); b.type = 'button';
+    if (id === current) b.setAttribute('aria-current', 'true');
+    b.addEventListener('click', () => go(id)); li.appendChild(b);
+    const kids = Object.keys(parentOf).filter(k => parentOf[k] === id);
+    if (kids.length) { const sub = h('ul'); kids.forEach(k => add(k, sub)); li.appendChild(sub); }
+    ul.appendChild(li);
+  })('system', root);
+}
+
+function render(animate) {
+  const cv = document.getElementById('canvas'); cv.textContent = '';
+  cv.appendChild(draw(current, animate));
+  document.getElementById('dtitle').textContent = D[current].title;
+  document.getElementById('dsum').textContent = D[current].sum;
+  renderCrumbs(); renderTree(); renderNotes();
+}
+function go(id) {
+  if (!D[id]) return;
+  current = id; selected = null; render(true);
+  try { history.replaceState(null, '', '#' + id); } catch (e) {}
+  document.getElementById('canvas').scrollLeft = 0;
+}
+document.getElementById('up').addEventListener('click', () => { if (parentOf[current]) go(parentOf[current]); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { if (selected) { selected = null; render(false); } else if (parentOf[current]) go(parentOf[current]); } });
+
+const start = (location.hash || '').slice(1);
+current = D[start] ? start : 'system';
+render(false);
+</script>
