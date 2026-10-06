@@ -111,12 +111,12 @@ A detector trained on real photos may detect simulated people poorly. If so, the
 
 ## 7. Download state
 
-Data folder on the development laptop: `C:\Users\IT Tech\gdn-data\`, outside the repository and outside OneDrive.
+Data folder on the development laptop: `C:\Users\IT Tech\gdn-data\`, outside the repository and outside OneDrive. Its layout is described in [data/README.md](../../data/README.md).
 
 | Dataset | State on 2026-10-06 | Note |
 |---|---|---|
-| VisDrone2019-DET | Download started | Three archives into `visdrone\` |
-| UAV-VisLoc sample (2.04 GB) | Download started | Into `uav-visloc\`. Google Drive sometimes refuses automated downloads; if so, download in a browser |
+| VisDrone2019-DET | **Downloaded** 2026-10-07, 1.9 GB, sizes match the source | Three archives in `datasets\visdrone\`; not yet unpacked |
+| UAV-VisLoc sample (2.04 GB) | Downloading | Into `datasets\uav-visloc\`. Google Drive sometimes refuses automated downloads; if so, download in a browser |
 | UAV-VisLoc full (16.4 GB) | Download started after the sample | Same caution |
 | HERIDAL | Not started | Download from the university site in step 8 |
 | SARD | Not started | Needs a free IEEE DataPort or Kaggle account; a team member must do this |

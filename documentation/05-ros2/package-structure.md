@@ -63,6 +63,9 @@ The brief's suggested list maps onto them as follows:
 ```text
 gps-denied-drone/
 ├── documentation/                      # this documentation
+├── presentation/                       # review slides and animations
+├── android/                            # gdn-ground/ app and mock-gateway/ (DB-3.0)
+├── data/                               # README only; data lives outside the repository
 ├── ros2_ws/
 │   └── src/
 │       └── gdn/

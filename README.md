@@ -150,18 +150,19 @@ Reasons for each choice are recorded as decision records in [documentation/17-de
 
 ## Repository layout
 
-Folders marked *planned* do not exist yet. They are created as the checklist reaches them.
+Folders marked *planned* hold only a short README for now. They are filled as the checklist reaches them.
 
 ```text
 .
 ├── README.md                  this file
 ├── CONTRIBUTING.md            how to take part
 ├── documentation/             complete engineering design (start here)
-├── presentation-assets/       animations used in the project slides
-├── ros2_ws/src/gdn/           planned: 22 ROS 2 packages for the Raspberry Pi
-├── android/gdn-ground/        planned: the Android app and a mock gateway
+├── presentation/              project review slides and their animations
+├── ros2_ws/src/gdn/           planned: 22 ROS 2 packages (simulation first, Raspberry Pi later)
+├── android/                   planned: the Android app and a mock gateway
 ├── fc_config/                 planned: ArduPilot parameter files and the Lua watchdog
-├── system/                    planned: Raspberry Pi set-up scripts and service files
+├── system/                    planned: set-up scripts for the laptop and the Raspberry Pi
+├── data/                      explains where datasets live; the data itself is not in git
 └── deps.repos                 planned: pinned third-party sources
 ```
 

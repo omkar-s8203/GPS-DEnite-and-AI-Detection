@@ -1,0 +1,51 @@
+# ROS 2 workspace build output
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Android
+android/**/build/
+android/**/.gradle/
+android/**/local.properties
+*.apk
+*.keystore
+*.jks
+
+# Editors and operating system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data never goes into the repository (see data/README.md)
+data/*
+!data/README.md
+*.zip
+*.tar
+*.tar.gz
+*.bag
+*.mcap
+*.db3
+*.tif
+*.tiff
+
+# Model weights (described in model cards, stored outside git)
+*.pt
+*.onnx
+*.ncnn.bin
+*.ncnn.param
+
+# Flight logs
+*.bin
+*.tlog
+
+# Secrets
+.env
+*.key
